@@ -176,8 +176,8 @@ public class GenPerlinNoiseMap : MonoBehaviour
         CombineVertex.Dispose();
         CombineUV.Dispose();
         CombineIndex.Dispose();
-        newMesh.RecalculateNormals();  // ĞŞ¸´·¨Ïß¼ÆËã
-        newMesh.RecalculateBounds();   // ĞŞ¸´°üÎ§ºĞ¼ÆËã
+        newMesh.RecalculateNormals();  // ä¿®å¤æ³•çº¿è®¡ç®—
+        newMesh.RecalculateBounds();   // ä¿®å¤åŒ…å›´ç›’è®¡ç®—
         return newMesh;
     }
     private void RefreshPartBlockLodLayer(PartBlockPro PartBlockPro, List<Matrix4x4> Transform, Vector3 CurPart, Vector3 PartOffect)

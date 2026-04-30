@@ -8,7 +8,7 @@ public class GenPerlinNoiseMapFromShader : MonoBehaviour
     public ComputeShader computeshader;
     private GraphicsBuffer instanceBuffer;
     private GraphicsBuffer IndirectBuffer;
-    private int STRIDE = 80;//²½·ù
+    private int STRIDE = 80;//æ­¥å¹…
     private MaterialPropertyBlock props;
     private void Start()
     {
@@ -20,22 +20,22 @@ public class GenPerlinNoiseMapFromShader : MonoBehaviour
     }
     private void StartGenPerlinNoiseMapPer()
     {
-        // ÊµÀıÊı¾İ»º³åÇø
+        // å®ä¾‹æ•°æ®ç¼“å†²åŒº
         instanceBuffer = new GraphicsBuffer(
               target: GraphicsBuffer.Target.Structured,
               count: InstanceCount,
               stride: STRIDE
         );
-        // ¼ä½Ó²ÎÊı»º³åÇø£¨IndirectArguments£©
+        // é—´æ¥å‚æ•°ç¼“å†²åŒºï¼ˆIndirectArgumentsï¼‰
         IndirectBuffer = new GraphicsBuffer(
             target: GraphicsBuffer.Target.IndirectArguments,
-            count: 1, //°üº¬1¸ö²ÎÊı¿é£¨Ã¿¸ö¿é´æ´¢5¸ö²ÎÊı£©
-            stride: 20 // 5*4×Ö½Ú²½·ù(args)
+            count: 1, //åŒ…å«1ä¸ªå‚æ•°å—ï¼ˆæ¯ä¸ªå—å­˜å‚¨5ä¸ªå‚æ•°ï¼‰
+            stride: 20 // 5*4å­—èŠ‚æ­¥å¹…(args)
         );
         uint[] args = {
-            mesh.GetIndexCount(0), // Ã¿¸öÊµÀıµÄË÷ÒıÊı
-            (uint)InstanceCount,   // ÊµÀı×ÜÊı
-            0, 0, 0                // ÆğÊ¼Ë÷Òı/¶¥µã/ÊµÀıÎ»ÖÃ
+            mesh.GetIndexCount(0), // æ¯ä¸ªå®ä¾‹çš„ç´¢å¼•æ•°
+            (uint)InstanceCount,   // å®ä¾‹æ€»æ•°
+            0, 0, 0                // èµ·å§‹ç´¢å¼•/é¡¶ç‚¹/å®ä¾‹ä½ç½®
         };
         IndirectBuffer.SetData(args);
         computeshader.SetBuffer(computeshader.FindKernel("BlockShader"), "_InstanceBuffer", instanceBuffer);

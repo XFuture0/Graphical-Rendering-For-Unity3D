@@ -7,9 +7,9 @@ public class GameSetting : MonoBehaviour
 {
     private void Awake()
     {
-        Application.targetFrameRate = 50;//¹Ì¶¨Ö¡ÂÊÎª50
-        QualitySettings.vSyncCount = 0;//Ö¡ÂÊ»á±»Ëø¶¨ÎªÏÔÊ¾Æ÷Ë¢ĞÂÂÊµÄÕûÊı±¶,0Îª¹Ø±Õ´¹Ö±Í¬²½
-        Cursor.lockState = CursorLockMode.Locked;//Ëø¶¨Êó±ê
-        Cursor.visible = false;//Òş²ØÊó±ê
+        Application.targetFrameRate = 50;//å›ºå®šå¸§ç‡ä¸º50
+        QualitySettings.vSyncCount = 0;//å¸§ç‡ä¼šè¢«é”å®šä¸ºæ˜¾ç¤ºå™¨åˆ·æ–°ç‡çš„æ•´æ•°å€,0ä¸ºå…³é—­å‚ç›´åŒæ­¥
+        Cursor.lockState = CursorLockMode.Locked;//é”å®šé¼ æ ‡
+        Cursor.visible = false;//éšè—é¼ æ ‡
     }
 }
