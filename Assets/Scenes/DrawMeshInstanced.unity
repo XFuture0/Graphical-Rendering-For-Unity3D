@@ -847,9 +847,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IsGround: 0
+  IsHitForward: 0
+  IsHitBack: 0
+  IsHitLeft: 0
+  IsHitRight: 0
   offect: 0.1
   gravity: -9.81
   distance: 0
+  checkRadius: 0.3
+  wallCheckDistance: 0.5
 --- !u!1 &2120121016
 GameObject:
   m_ObjectHideFlags: 0

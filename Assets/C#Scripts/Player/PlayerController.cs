@@ -10,6 +10,11 @@ public class PlayerController : MonoBehaviour
     public float MouseSensitivityY;
     private float YRotation;
     private float XRotation;
+    private PhysicsCheck_Block physicsCheck;
+    private void Awake()
+    {
+        physicsCheck = GetComponent<PhysicsCheck_Block>();
+    }
     private void Update()
     {
         BreakBlock();
@@ -21,6 +26,7 @@ public class PlayerController : MonoBehaviour
         Move();
         Jump();
     }
+
     private void Move()
     {
         float MoveHorizontal = InputManager.Instance.GetKeyDown_Horizontal();
@@ -31,9 +37,23 @@ public class PlayerController : MonoBehaviour
         MoveRight.y = 0;
         Vector3 MoveDirection = MoveForward * MoveVertical + MoveRight * MoveHorizontal;
         MoveDirection.Normalize();
-        if(MoveDirection != Vector3.zero)
+
+        if (MoveDirection != Vector3.zero)
         {
-            transform.position += MoveDirection * Speed * Time.deltaTime;
+            Vector3 delta = MoveDirection * Speed * Time.deltaTime;
+
+            if (physicsCheck != null)
+            {
+                if (physicsCheck.IsHitForward && delta.z > 0) delta.z = 0;
+                if (physicsCheck.IsHitBack && delta.z < 0) delta.z = 0;
+                if (physicsCheck.IsHitRight && delta.x > 0) delta.x = 0;
+                if (physicsCheck.IsHitLeft && delta.x < 0) delta.x = 0;
+            }
+            delta.y = 0;
+            if(Mathf.Abs(delta.x) >= 0.01f || Mathf.Abs(delta.z) >= 0.01f)
+            {
+                transform.position += delta;
+            }
         }
     }
     private void ViewRoll()

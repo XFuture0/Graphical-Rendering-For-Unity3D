@@ -251,6 +251,14 @@ public class GenPerlinNoiseMap : MonoBehaviour
         s ^= s << 5;
         return (s % 100000) * multiplier;
     }
+    public bool HasBlockAt(Vector3Int pos)
+    {
+        float seedOffsetX = HashToOffset(seed, 0.001f);
+        float seedOffsetY = HashToOffset(seed + 1, 0.001f);
+        float noiseValue = Mathf.PerlinNoise(pos.x * scale + seedOffsetX, pos.z * scale + seedOffsetY);
+        int groundHeight = Mathf.FloorToInt(noiseValue * 10);
+        return pos.y <= groundHeight;
+    }
 }
 [BurstCompile]
 public struct CombineMeshJob : IJob
