@@ -10,14 +10,11 @@ public class PhysicsCheck_Block : MonoBehaviour
     public bool IsHitLeft;
     public bool IsHitRight;
     public float offect = 0.1f;
-    public float gravity = -9.81f;
-    public float distance;
     public float checkRadius = 0.3f;
     public float wallCheckDistance = 0.3f;
 
     private void FixedUpdate()
     {
-        ApplyGravity();
         CheckGround();
         CheckWalls();
     }
@@ -98,13 +95,6 @@ public class PhysicsCheck_Block : MonoBehaviour
         if (MapManager.Instance.HasBlockAt(rightPos))
         {
             IsHitRight = true;
-        }
-    }
-    private void ApplyGravity()
-    {
-        if (!IsGround)
-        {
-            transform.position += Vector3.up * gravity * Time.deltaTime;
         }
     }
 }

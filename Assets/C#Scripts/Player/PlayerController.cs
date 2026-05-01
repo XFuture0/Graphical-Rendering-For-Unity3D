@@ -5,11 +5,12 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float Speed;
-    public float JumpSpeed;
+    public float JumpForce = 8f;
     public float MouseSensitivityX;
     public float MouseSensitivityY;
     private float YRotation;
     private float XRotation;
+    private float verticalVelocity;
     private PhysicsCheck_Block physicsCheck;
     private void Awake()
     {
@@ -22,9 +23,10 @@ public class PlayerController : MonoBehaviour
     }
     private void FixedUpdate()
     {
+        ApplyGravity();
         ViewRoll();
         Move();
-        Jump();
+        HandleJump();
     }
 
     private void Move()
@@ -65,12 +67,25 @@ public class PlayerController : MonoBehaviour
         XRotation = Mathf.Clamp(XRotation, -90, 90);
         transform.rotation = Quaternion.Euler(XRotation, YRotation, 0);
     }
-    private void Jump()
+    private void HandleJump()
     {
-        if(InputManager.Instance.GetKey_Space())
+        if (InputManager.Instance.GetKey_Space() && physicsCheck != null && physicsCheck.IsGround)
         {
-            transform.position += Vector3.up * JumpSpeed * Time.deltaTime;
+            verticalVelocity = JumpForce;
         }
+    }
+
+    private void ApplyGravity()
+    {
+        if (physicsCheck != null && physicsCheck.IsGround && verticalVelocity <= 0)
+        {
+            verticalVelocity = 0;
+        }
+        else
+        {
+            verticalVelocity += GameSetting.Jumpgravity * Time.deltaTime;
+        }
+        transform.position += Vector3.up * verticalVelocity * Time.deltaTime;
     }
     private void BreakBlock()
     {
