@@ -17,6 +17,7 @@ public class PartBlockPro
     public Mesh Lod_Middle;
     public Bounds PartBound;
     public LodLayer lodLayer;
+    public Matrix4x4[] CachedMatrices;
     public override bool Equals(object obj)
     {
         return obj is PartBlockPro other &&
@@ -100,7 +101,7 @@ public class GenPerlinNoiseMap : MonoBehaviour
             if (Distance < ViewDistance)
             {
                 RefreshPartBlockLodLayer(part.Key, part.Value, CurPart, part.Key.PartOffect);
-                Graphics.DrawMeshInstanced(part.Key.PartMesh, 0, mat, part.Value.ToArray(), 1);
+                Graphics.DrawMeshInstanced(part.Key.PartMesh, 0, mat, part.Key.CachedMatrices, 1);
             }
         }
     }
@@ -128,6 +129,7 @@ public class GenPerlinNoiseMap : MonoBehaviour
             var CurBlockMatrices = new List<Matrix4x4>(BlockCount);
             CurBlockMatrices.AddRange(BlockMatrices);
             CurBlockPro.Count = BlockCount;
+            CurBlockPro.CachedMatrices = CurBlockMatrices.ToArray();
             CurBlockPro.Lod_Top = VertexCombine(BlockCount, CurBlockMatrices, AddPart, StaticBlock_Lod_Top.Cube_Vertex, StaticBlock_Lod_Top.Cube_Index, StaticBlock_Lod_Top.Cube_UV);
             CurBlockPro.Lod_Middle = VertexCombine(BlockCount, CurBlockMatrices, AddPart, StaticBlock_Lod_Middle.Cube_Vertex, StaticBlock_Lod_Middle.Cube_Index, StaticBlock_Lod_Middle.Cube_UV);
             CurBlockPro.lodLayer = LodLayer.NULL;
