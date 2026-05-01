@@ -745,6 +745,7 @@ GameObject:
   - component: {fileID: 1881130208}
   - component: {fileID: 1881130211}
   - component: {fileID: 1881130210}
+  - component: {fileID: 1881130212}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -764,7 +765,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dde01e29acf62654e89b053fde406c33, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Speed: 10
+  Speed: 5
   JumpSpeed: 5
   MouseSensitivityX: 180
   MouseSensitivityY: 90
@@ -833,6 +834,22 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1881130207}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1881130212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1881130207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9a3da13ade20c54bafff056f4696a44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IsGround: 0
+  offect: 0.1
+  gravity: -9.81
+  distance: 0
 --- !u!1 &2120121016
 GameObject:
   m_ObjectHideFlags: 0
