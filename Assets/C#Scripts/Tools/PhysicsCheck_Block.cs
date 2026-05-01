@@ -12,13 +12,11 @@ public class PhysicsCheck_Block : MonoBehaviour
     public float offect = 0.1f;
     public float checkRadius = 0.3f;
     public float wallCheckDistance = 0.3f;
-
     private void FixedUpdate()
     {
         CheckGround();
         CheckWalls();
     }
-
     private void CheckGround()
     {
         IsGround = false;
