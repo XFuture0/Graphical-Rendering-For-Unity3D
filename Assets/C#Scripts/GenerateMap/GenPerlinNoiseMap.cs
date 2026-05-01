@@ -36,6 +36,7 @@ public class GenPerlinNoiseMap : MonoBehaviour
     public int LayerCount;
     public int Lod1_LayerCount;
     public int Lod2_LayerCount;
+    public int seed;
     private Vector3 CurPart;
     public Dictionary<PartBlockPro,List<Matrix4x4>> PartBlocks = new Dictionary<PartBlockPro,List<Matrix4x4>>();
     private void Start()
@@ -109,11 +110,13 @@ public class GenPerlinNoiseMap : MonoBehaviour
     {
         int BlockCount = 0;
         List<Matrix4x4> BlockMatrices = new List<Matrix4x4>(50000);
+        float seedOffsetX = HashToOffset(seed, 0.001f);
+        float seedOffsetY = HashToOffset(seed + 1, 0.001f);
         for (int m = 0; m < 50; m++)
         {
             for (int n = 0; n < 50; n++)
             {
-                int GroundHigh = (int)(Mathf.PerlinNoise((50 * AddPart.x + m) * scale, (50 * AddPart.y + n) * scale) * 10);
+                int GroundHigh = (int)(Mathf.PerlinNoise((50 * AddPart.x + m) * scale + seedOffsetX, (50 * AddPart.y + n) * scale + seedOffsetY) * 10);
                 for (int k = 0; k <= GroundHigh; k++)
                 {
                     BlockMatrices.Add(Matrix4x4.TRS(new Vector3(50 * AddPart.x + m, k, 50 * AddPart.y + n), Quaternion.identity, Vector3.one));
@@ -239,6 +242,14 @@ public class GenPerlinNoiseMap : MonoBehaviour
         BreakBlockPro.PartOffect = new Vector3(BreakPart.x, 0, BreakPart.z) * 50 + new Vector3(25, 0, 25);
         PartBlocks[BreakBlockPro].Add(BlockMatrix);
         RefreshCurBlocks(BreakPart, true);
+    }
+    private float HashToOffset(int seed, float multiplier)
+    {
+        uint s = (uint)seed;
+        s ^= s << 13;
+        s ^= s >> 17;
+        s ^= s << 5;
+        return (s % 100000) * multiplier;
     }
 }
 [BurstCompile]

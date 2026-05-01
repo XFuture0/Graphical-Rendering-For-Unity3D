@@ -868,6 +868,7 @@ MonoBehaviour:
   LayerCount: 20
   Lod1_LayerCount: 4
   Lod2_LayerCount: 6
+  seed: 45354345
 --- !u!4 &2120121018
 Transform:
   m_ObjectHideFlags: 0
