@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     private float YRotation;
     private float XRotation;
     private float verticalVelocity;
+    private bool isBagOpen = false;
     private PhysicsCheck_Block physicsCheck;
     private void Awake()
     {
@@ -20,6 +21,26 @@ public class PlayerController : MonoBehaviour
     {
         BreakBlock();
         CreateBlock();
+        ToggleBag();
+    }
+
+    private void ToggleBag()
+    {
+        if (InputManager.Instance.GetKeyDown_E())
+        {
+            isBagOpen = !isBagOpen;
+            UIManager.Instance.PlayerBag.SetActive(isBagOpen);
+            if (isBagOpen)
+            {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
+            else
+            {
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+        }
     }
     private void FixedUpdate()
     {

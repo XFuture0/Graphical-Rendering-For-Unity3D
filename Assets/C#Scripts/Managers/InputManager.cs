@@ -32,4 +32,8 @@ public class InputManager : SingleTons<InputManager>
     {
         return Input.GetMouseButtonDown(1);
     }
+    public bool GetKeyDown_E()
+    {
+        return Input.GetKeyDown(KeyCode.E);
+    }
 }
