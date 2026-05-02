@@ -13,6 +13,7 @@ public class StartGameCanvs : MonoBehaviour
     public Button BackButton_Init;
     public TMP_InputField SeedInput;
     public GameObject MapSlots;
+    public GameObject MapSlotPrefab;
     private void Awake()
     {
         InitGameButton_Sel.onClick.AddListener(OnInitGame_Sel);
@@ -21,18 +22,26 @@ public class StartGameCanvs : MonoBehaviour
         InitGameButton_Init.onClick.AddListener(OnInitGame_Init);
         BackButton_Init.onClick.AddListener(OnBack_Init);
     }
+    private void OnEnable()
+    {
+        InitMapList();
+    }
+    private void InitMapList()
+    {
+        
+        foreach(Transform child in MapSlots.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        foreach(MapSlot mapSlot in MapManager.Instance.mapData.MapSlots)
+        {
+            GameObject mapSlotObj = Instantiate(MapSlotPrefab, MapSlots.transform);
+            mapSlotObj.transform.GetChild(0).GetComponent<TMP_Text>().text = mapSlot.Seed.ToString();
+        }
+    }
     private void OnStartGame_Sel()
     {
-        int Seed;
-        if(SeedInput.text == "")
-        {
-            Seed = int.Parse(((TextMeshProUGUI)SeedInput.placeholder).text);
-        }
-        else
-        {
-            Seed = int.Parse(SeedInput.text);
-        }
-        MapManager.Instance.InitMap(Seed);
+        //MapManager.Instance.InitMap(Seed);
         UIManager.Instance.StartGameCanvs.SetActive(false);
     }
     private void OnInitGame_Sel()
@@ -46,6 +55,17 @@ public class StartGameCanvs : MonoBehaviour
     }
     private void OnInitGame_Init()
     {
+        int Seed;
+        if(SeedInput.text == "")
+        {
+            Seed = int.Parse(((TextMeshProUGUI)SeedInput.placeholder).text);
+        }
+        else
+        {
+            Seed = int.Parse(SeedInput.text);
+        }
+        MapManager.Instance.mapData.MapSlots.Add(new MapSlot(Seed));
+        InitMapList();
     }
     private void OnBack_Init()
     {

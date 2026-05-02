@@ -5822,7 +5822,8 @@ MonoBehaviour:
   InitGameButton_Init: {fileID: 1438912673}
   BackButton_Init: {fileID: 1373923821}
   SeedInput: {fileID: 1753149607}
-  MapSlots: {fileID: 8881707826434382974, guid: fced9502cb729f34bbe98007918be796,
+  MapSlots: {fileID: 756650562}
+  MapSlotPrefab: {fileID: 8881707826434382974, guid: fced9502cb729f34bbe98007918be796,
     type: 3}
 --- !u!1 &756650562
 GameObject:
