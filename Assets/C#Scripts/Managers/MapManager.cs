@@ -40,4 +40,8 @@ public class MapManager : SingleTons<MapManager>
         }
         return genPerlinNoiseMap.HasBlockAt(pos);
     }
+    public void InitMap(int Seed)
+    {
+        genPerlinNoiseMap.InitMap(Seed);
+    }
 }

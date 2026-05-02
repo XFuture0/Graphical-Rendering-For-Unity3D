@@ -36,11 +36,15 @@ public class GenPerlinNoiseMap : MonoBehaviour
     public int LayerCount;
     public int Lod1_LayerCount;
     public int Lod2_LayerCount;
-    public int seed;
+    
+    private int seed;
     private Vector3 CurPart;
     public Dictionary<PartBlockPro,List<Matrix4x4>> PartBlocks = new Dictionary<PartBlockPro,List<Matrix4x4>>();
-    private void Start()
+    public void InitMap(int Seed)
     {
+        seed = Seed;
+        int height = GetGroundHeightAt(0, 0);
+        UIManager.Instance.InitGame(height);
         StartCoroutine(InitGenMap());
     }
     private IEnumerator InitGenMap()
@@ -249,7 +253,7 @@ public class GenPerlinNoiseMap : MonoBehaviour
         s ^= s << 13;
         s ^= s >> 17;
         s ^= s << 5;
-        return (s % 100000) * multiplier;
+        return s % 100000 * multiplier;
     }
     public bool HasBlockAt(Vector3Int pos)
     {
@@ -258,6 +262,13 @@ public class GenPerlinNoiseMap : MonoBehaviour
         float noiseValue = Mathf.PerlinNoise(pos.x * scale + seedOffsetX, pos.z * scale + seedOffsetY);
         int groundHeight = Mathf.FloorToInt(noiseValue * 10);
         return pos.y <= groundHeight;
+    }
+    public int GetGroundHeightAt(float x, float z)
+    {
+        float seedOffsetX = HashToOffset(seed, 0.001f);
+        float seedOffsetY = HashToOffset(seed + 1, 0.001f);
+        float noiseValue = Mathf.PerlinNoise(x * scale + seedOffsetX, z * scale + seedOffsetY);
+        return Mathf.FloorToInt(noiseValue * 10) + 1;
     }
 }
 [BurstCompile]

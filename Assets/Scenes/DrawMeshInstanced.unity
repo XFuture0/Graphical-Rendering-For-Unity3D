@@ -3140,7 +3140,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: NewGame
+  m_text: 432453
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -8493,10 +8493,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PlayerBag: {fileID: 1511512074}
+  PlayerCanvs: {fileID: 679863662}
   BagCanvs: {fileID: 225261867}
   SelectSlot: {fileID: 81955749}
   MainMenuCanvs: {fileID: 430160235}
   StartGameCanvs: {fileID: 749961001}
+  Player: {fileID: 1881130207}
 --- !u!1 &1393681229
 GameObject:
   m_ObjectHideFlags: 0
@@ -12785,7 +12787,6 @@ MonoBehaviour:
   LayerCount: 20
   Lod1_LayerCount: 4
   Lod2_LayerCount: 6
-  seed: 45354345
 --- !u!4 &2120121018
 Transform:
   m_ObjectHideFlags: 0

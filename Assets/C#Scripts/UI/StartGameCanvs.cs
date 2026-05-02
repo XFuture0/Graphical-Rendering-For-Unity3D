@@ -16,7 +16,17 @@ public class StartGameCanvs : MonoBehaviour
     }
     private void OnInitGame()
     {
-        Debug.Log("InitGame");
+        int Seed;
+        if(SeedInput.text == "")
+        {
+            Seed = int.Parse(((TextMeshProUGUI)SeedInput.placeholder).text);
+        }
+        else
+        {
+            Seed = int.Parse(SeedInput.text);
+        }
+        MapManager.Instance.InitMap(Seed);
+        UIManager.Instance.StartGameCanvs.SetActive(false);
     }
     private void OnBack()
     {
