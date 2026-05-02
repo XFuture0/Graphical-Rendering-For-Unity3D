@@ -25,7 +25,7 @@ public class BagSlot : MonoBehaviour
         if (itemImage != null)
         {
             itemImage.sprite = sprite;
-            itemImage.color = sprite != null ? new Color(1, 1, 1, 1) : new Color(1, 1, 1, 0);
+            itemImage.color = Count > 0 ? new Color(1, 1, 1, 1) : new Color(1, 1, 1, 0);
         }
         if (itemCountText != null)
         {

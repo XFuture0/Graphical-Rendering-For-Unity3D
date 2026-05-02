@@ -46,8 +46,11 @@ public class PlayerController : MonoBehaviour
     {
         ApplyGravity();
         ViewRoll();
-        Move();
-        HandleJump();
+        if (!UIManager.Instance.PlayerBag.activeSelf)
+        {
+            Move();
+            HandleJump();
+        }
     }
 
     private void Move()
@@ -110,7 +113,7 @@ public class PlayerController : MonoBehaviour
     }
     private void BreakBlock()
     {
-        if (InputManager.Instance.GetKeyDown_MouseLeft())
+        if (InputManager.Instance.GetKeyDown_MouseLeft() && !UIManager.Instance.PlayerBag.activeSelf)
         {
             BlockGraphicsRayCastHit hit = new BlockGraphicsRayCastHit();
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -122,7 +125,7 @@ public class PlayerController : MonoBehaviour
     }
     private void CreateBlock()
     {
-        if (InputManager.Instance.GetKeyDown_MouseRight())
+        if (InputManager.Instance.GetKeyDown_MouseRight() && !UIManager.Instance.PlayerBag.activeSelf)
         {
             BlockGraphicsRayCastHit hit = new BlockGraphicsRayCastHit();
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

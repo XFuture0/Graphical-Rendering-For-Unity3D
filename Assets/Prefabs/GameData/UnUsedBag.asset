@@ -13,8 +13,6 @@ MonoBehaviour:
   m_Name: UnUsedBag
   m_EditorClassIdentifier: 
   items:
-  - itemImage: {fileID: 21300000, guid: b9eac381d1d87c349aa08932281d7c2a, type: 3}
-    itemCount: 0
   - itemImage: {fileID: 0}
     itemCount: 0
   - itemImage: {fileID: 0}
@@ -53,6 +51,8 @@ MonoBehaviour:
     itemCount: 0
   - itemImage: {fileID: 0}
     itemCount: 0
+  - itemImage: {fileID: 1640126520, guid: da3779e26336de74bb1bfdd0fcb81dfe, type: 3}
+    itemCount: 2
   - itemImage: {fileID: 0}
     itemCount: 0
   - itemImage: {fileID: 0}

@@ -37,6 +37,7 @@ public class ItemDrag : MonoBehaviour
         GameObject slot = GetSlotUnderMouse();
         if (slot != null && slot.GetComponent<Image>().sprite != null)
         {
+            DragSlot.transform.position = Input.mousePosition;
             IsDrag = true;
             originalSlot = slot.transform;
             CopyItemData(slot.transform, DragSlot.transform);

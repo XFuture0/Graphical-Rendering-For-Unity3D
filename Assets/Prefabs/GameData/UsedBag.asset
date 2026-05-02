@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: UsedBag
   m_EditorClassIdentifier: 
   items:
-  - itemImage: {fileID: 21300000, guid: b9eac381d1d87c349aa08932281d7c2a, type: 3}
-    itemCount: 64
+  - itemImage: {fileID: 0}
+    itemCount: 0
   - itemImage: {fileID: 0}
     itemCount: 0
   - itemImage: {fileID: 0}
