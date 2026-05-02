@@ -9,6 +9,17 @@ public class BagCanvas : MonoBehaviour
     public GameObject UsedBagViewOnPanel;
     public GameObject UsedBagView;
     public GameObject UnUsedBagView;
+    public void UpdateBagDataOnPanel(List<ItemData> items, BagType bagType)
+    {
+        for (int i = 0; i < items.Count; i++)
+        {
+            bool hasItem = items[i].itemImage != null && items[i].itemCount > 0;
+            if (bagType == BagType.Used)
+            {
+                UsedBagViewOnPanel.transform.GetChild(i).GetComponent<BagSlot>().SetItem(items[i].itemImage, items[i].itemCount);
+            }
+        }
+    }
     public void UpdateBagData(List<ItemData> items, BagType bagType)
     {
         for (int i = 0; i < items.Count; i++)
@@ -17,35 +28,18 @@ public class BagCanvas : MonoBehaviour
 
             if (bagType == BagType.Used)
             {
-                UpdateSlot(UsedBagViewOnPanel.transform.GetChild(i), items[i], hasItem);
                 if (UsedBagView.activeSelf)
                 {
-                    UpdateSlot(UsedBagView.transform.GetChild(i), items[i], hasItem);
+                    UsedBagView.transform.GetChild(i).GetComponent<BagSlot>().SetItem(items[i].itemImage, items[i].itemCount);
                 }
             }
             else
             {
                 if (UnUsedBagView.activeSelf)
                 {
-                    UpdateSlot(UnUsedBagView.transform.GetChild(i), items[i], hasItem);
+                    UnUsedBagView.transform.GetChild(i).GetComponent<BagSlot>().SetItem(items[i].itemImage, items[i].itemCount);
                 }
             }
-        }
-    }
-    private void UpdateSlot(Transform slot, ItemData item, bool hasItem)
-    {
-        Image itemImage = slot.GetComponent<Image>();
-        TextMeshProUGUI itemText = slot.GetChild(0).GetComponent<TextMeshProUGUI>();
-        if (hasItem)
-        {
-            itemImage.color = new Color(itemImage.color.r, itemImage.color.g, itemImage.color.b, 1f);
-            itemImage.sprite = item.itemImage;
-            itemText.text = item.itemCount.ToString();
-        }
-        else
-        {
-            itemImage.color = new Color(itemImage.color.r, itemImage.color.g, itemImage.color.b, 0f);
-            itemText.text = "";
         }
     }
 }

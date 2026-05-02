@@ -5,4 +5,5 @@ using UnityEngine;
 public class UIManager : SingleTons<UIManager>
 {
     public GameObject PlayerBag;
+    public GameObject BagCanvs;
 }
