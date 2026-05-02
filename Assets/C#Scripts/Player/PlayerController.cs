@@ -17,11 +17,25 @@ public class PlayerController : MonoBehaviour
     {
         physicsCheck = GetComponent<PhysicsCheck_Block>();
     }
+    private int selectedSlot = 1;
+
     private void Update()
     {
         BreakBlock();
         CreateBlock();
         ToggleBag();
+        HandleNumberKeys();
+    }
+
+    private void HandleNumberKeys()
+    {
+        int number = InputManager.Instance.GetKeyDown_Number();
+        if (number > 0)
+        {
+            var rect = UIManager.Instance.SelectSlot.GetComponent<RectTransform>();
+            rect.anchoredPosition = new Vector2(720 + (number - 1) * 140, rect.anchoredPosition.y);
+            selectedSlot = number;
+        }
     }
 
     private void ToggleBag()
@@ -137,7 +151,7 @@ public class PlayerController : MonoBehaviour
                 Vector3 faceNormal = GetFaceNormal(ray.direction, localHit);
                 Vector3 newBlockPos = blockCenter + faceNormal;
                 Matrix4x4 newBlock = Matrix4x4.TRS(newBlockPos, Quaternion.identity, Vector3.one);
-                MapManager.Instance.CreateBlocks(newBlock);
+                MapManager.Instance.CreateBlocks(newBlock, selectedSlot);
             }
         }
     }

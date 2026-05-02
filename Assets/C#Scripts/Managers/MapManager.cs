@@ -17,12 +17,16 @@ public class MapManager : SingleTons<MapManager>
         genPerlinNoiseMap.BreakBlocks(BlockMatrix);
         Instantiate(StoneBlock, pos, Quaternion.identity);
     }
-    public void CreateBlocks(Matrix4x4 BlockMatrix)
+    public void CreateBlocks(Matrix4x4 BlockMatrix, int selectedSlot)
     {
         Vector3Int pos = Vector3Int.RoundToInt(BlockMatrix.GetPosition());
         placedBlocks.Add(pos);
         brokenBlocks.Remove(pos);
-        genPerlinNoiseMap.CreateBlocks(BlockMatrix);
+        if(BagManager.Instance.UsedBagData.items[selectedSlot - 1] != null && BagManager.Instance.UsedBagData.items[selectedSlot - 1].itemCount > 0)
+        {
+            BagManager.Instance.UsedBagData.items[selectedSlot - 1].itemCount--;
+            genPerlinNoiseMap.CreateBlocks(BlockMatrix);
+        }
     }
     public bool HasBlockAt(Vector3Int pos)
     {
