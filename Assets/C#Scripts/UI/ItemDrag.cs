@@ -93,4 +93,16 @@ public class ItemDrag : MonoBehaviour
         }
         return null;
     }
+    private void OnDisable()
+    {
+        if(IsDrag && DragSlot != null)
+        {
+            targetSlot = originalSlot;
+            CopyItemData(DragSlot.transform, targetSlot.transform);
+            targetSlot.GetComponent<BagSlot>().SaveItemData();
+            IsDrag = false;
+            originalSlot = null;
+            targetSlot = null;
+        }
+    }
 }

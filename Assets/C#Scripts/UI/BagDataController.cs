@@ -16,13 +16,13 @@ public class BagDataController : MonoBehaviour
     {
         views = GetComponent<BagCanvas>();
     }
-    private void OnEnable()
-    {
-        SyncToAllViews();
-    }
     private void Update()
     {
         views.UpdateBagDataOnPanel(UsedBagData.items, BagType.Used);
+        if(UIManager.Instance.PlayerBag.activeSelf)
+        {
+            SyncToAllViews();
+        }
     }
     public void SyncToAllViews()
     {
