@@ -18,7 +18,8 @@ public class MainMenuCanvs : MonoBehaviour
     }
     private void OnStartGame()
     {
-        Debug.Log("StartGame");
+        UIManager.Instance.StartGameCanvs.SetActive(true);
+        UIManager.Instance.MainMenuCanvs.SetActive(false);
     }
     private void OnNetGame()
     {

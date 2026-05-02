@@ -8,4 +8,5 @@ public class UIManager : SingleTons<UIManager>
     public GameObject BagCanvs;
     public GameObject SelectSlot;
     public GameObject MainMenuCanvs;
+    public GameObject StartGameCanvs;
 }
