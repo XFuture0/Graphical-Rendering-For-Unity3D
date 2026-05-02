@@ -12,7 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a908ad7d98cf13a42b4a302af0240c47, type: 3}
   m_Name: MapData
   m_EditorClassIdentifier: 
-  MapSlots:
-  - Index: 0
-    Seed: 0
-    PlayerStartPosition: {x: 0, y: 0, z: 0}
+  MapSlots: []

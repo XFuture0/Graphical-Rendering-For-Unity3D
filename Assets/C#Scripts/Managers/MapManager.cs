@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static GenPerlinNoiseMap;
 
 public class MapManager : SingleTons<MapManager>
 {
@@ -10,6 +9,7 @@ public class MapManager : SingleTons<MapManager>
     public HashSet<Vector3Int> placedBlocks = new HashSet<Vector3Int>();
     public GameObject StoneBlock;
     public MapData mapData;
+    public int Seed;
     public void BreakBlocks(Matrix4x4 BlockMatrix)
     {
         Vector3Int pos = Vector3Int.RoundToInt(BlockMatrix.GetPosition());
@@ -41,8 +41,17 @@ public class MapManager : SingleTons<MapManager>
         }
         return genPerlinNoiseMap.HasBlockAt(pos);
     }
-    public void InitMap(int Seed)
+    public void SetSeed(int Seed)
     {
-        genPerlinNoiseMap.InitMap(Seed);
+        this.Seed = Seed;
+    }
+    public bool InitMap()
+    {
+        if(Seed != 0)
+        {
+            genPerlinNoiseMap.InitMap(Seed);
+            return true;
+        }
+        return false;
     }
 }

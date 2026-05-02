@@ -41,8 +41,11 @@ public class StartGameCanvs : MonoBehaviour
     }
     private void OnStartGame_Sel()
     {
-        //MapManager.Instance.InitMap(Seed);
-        UIManager.Instance.StartGameCanvs.SetActive(false);
+        bool success = MapManager.Instance.InitMap();
+        if(success)
+        {
+            UIManager.Instance.StartGameCanvs.SetActive(false);
+        }
     }
     private void OnInitGame_Sel()
     {
