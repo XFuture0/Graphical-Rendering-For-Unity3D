@@ -7,4 +7,5 @@ public class UIManager : SingleTons<UIManager>
     public GameObject PlayerBag;
     public GameObject BagCanvs;
     public GameObject SelectSlot;
+    public GameObject MainMenuCanvs;
 }
