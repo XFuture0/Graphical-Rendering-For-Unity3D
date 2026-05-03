@@ -8,6 +8,7 @@ public class StartGameCanvs : MonoBehaviour
 {
     public Button InitGameButton_Sel;
     public Button StartGameButton_Sel;
+    public Button DeleteMapButton_Sel;
     public Button BackButton_Sel;
     public Button InitGameButton_Init;
     public Button BackButton_Init;
@@ -18,6 +19,7 @@ public class StartGameCanvs : MonoBehaviour
     {
         InitGameButton_Sel.onClick.AddListener(OnInitGame_Sel);
         StartGameButton_Sel.onClick.AddListener(OnStartGame_Sel);
+        DeleteMapButton_Sel.onClick.AddListener(OnDeleteMapButton_Sel);
         BackButton_Sel.onClick.AddListener(OnBack_Sel);
         InitGameButton_Init.onClick.AddListener(OnInitGame_Init);
         BackButton_Init.onClick.AddListener(OnBack_Init);
@@ -47,6 +49,11 @@ public class StartGameCanvs : MonoBehaviour
             UIManager.Instance.StartGameCanvs.SetActive(false);
         }
     }
+    private void OnDeleteMapButton_Sel()
+    {
+        MapManager.Instance.DeleteMap();
+        InitMapList();
+    }
     private void OnInitGame_Sel()
     {
         transform.GetChild(1).gameObject.SetActive(true);
@@ -70,6 +77,7 @@ public class StartGameCanvs : MonoBehaviour
         MapManager.Instance.mapData.MapSlots.Add(new MapSlot(Seed));
         InitMapList();
         DataManager.Instance.SaveData();
+        transform.GetChild(1).gameObject.SetActive(false);
     }
     private void OnBack_Init()
     {
