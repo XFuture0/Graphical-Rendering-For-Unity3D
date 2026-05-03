@@ -12303,7 +12303,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Speed: 5
-  JumpForce: 8
+  JumpForce: 7
   MouseSensitivityX: 180
   MouseSensitivityY: 90
 --- !u!4 &1881130209
