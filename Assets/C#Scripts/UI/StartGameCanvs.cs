@@ -69,6 +69,7 @@ public class StartGameCanvs : MonoBehaviour
         }
         MapManager.Instance.mapData.MapSlots.Add(new MapSlot(Seed));
         InitMapList();
+        DataManager.Instance.SaveData();
     }
     private void OnBack_Init()
     {

@@ -9,7 +9,7 @@ public class MapManager : SingleTons<MapManager>
     public HashSet<Vector3Int> placedBlocks = new HashSet<Vector3Int>();
     public GameObject StoneBlock;
     public MapData mapData;
-    public int Seed;
+    private int Seed;
     public void BreakBlocks(Matrix4x4 BlockMatrix)
     {
         Vector3Int pos = Vector3Int.RoundToInt(BlockMatrix.GetPosition());
