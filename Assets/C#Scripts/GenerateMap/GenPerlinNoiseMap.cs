@@ -17,6 +17,7 @@ public class PartBlockPro
     public Mesh Lod_Middle;
     public Bounds PartBound;
     public LodLayer lodLayer;
+    public Matrix4x4[] CachedMatrices;
     public override bool Equals(object obj)
     {
         return obj is PartBlockPro other &&
@@ -35,10 +36,15 @@ public class GenPerlinNoiseMap : MonoBehaviour
     public int LayerCount;
     public int Lod1_LayerCount;
     public int Lod2_LayerCount;
+    
+    private int seed;
     private Vector3 CurPart;
     public Dictionary<PartBlockPro,List<Matrix4x4>> PartBlocks = new Dictionary<PartBlockPro,List<Matrix4x4>>();
-    private void Start()
+    public void InitMap(int Seed)
     {
+        seed = Seed;
+        int height = GetGroundHeightAt(0, 0);
+        UIManager.Instance.InitGame(height);
         StartCoroutine(InitGenMap());
     }
     private IEnumerator InitGenMap()
@@ -100,7 +106,7 @@ public class GenPerlinNoiseMap : MonoBehaviour
             if (Distance < ViewDistance)
             {
                 RefreshPartBlockLodLayer(part.Key, part.Value, CurPart, part.Key.PartOffect);
-                Graphics.DrawMeshInstanced(part.Key.PartMesh, 0, mat, part.Value.ToArray(), 1);
+                Graphics.DrawMeshInstanced(part.Key.PartMesh, 0, mat, part.Key.CachedMatrices, 1);
             }
         }
     }
@@ -108,11 +114,13 @@ public class GenPerlinNoiseMap : MonoBehaviour
     {
         int BlockCount = 0;
         List<Matrix4x4> BlockMatrices = new List<Matrix4x4>(50000);
+        float seedOffsetX = HashToOffset(seed, 0.001f);
+        float seedOffsetY = HashToOffset(seed + 1, 0.001f);
         for (int m = 0; m < 50; m++)
         {
             for (int n = 0; n < 50; n++)
             {
-                int GroundHigh = (int)(Mathf.PerlinNoise((50 * AddPart.x + m) * scale, (50 * AddPart.y + n) * scale) * 10);
+                int GroundHigh = (int)(Mathf.PerlinNoise((50 * AddPart.x + m) * scale + seedOffsetX, (50 * AddPart.y + n) * scale + seedOffsetY) * 10);
                 for (int k = 0; k <= GroundHigh; k++)
                 {
                     BlockMatrices.Add(Matrix4x4.TRS(new Vector3(50 * AddPart.x + m, k, 50 * AddPart.y + n), Quaternion.identity, Vector3.one));
@@ -128,6 +136,7 @@ public class GenPerlinNoiseMap : MonoBehaviour
             var CurBlockMatrices = new List<Matrix4x4>(BlockCount);
             CurBlockMatrices.AddRange(BlockMatrices);
             CurBlockPro.Count = BlockCount;
+            CurBlockPro.CachedMatrices = CurBlockMatrices.ToArray();
             CurBlockPro.Lod_Top = VertexCombine(BlockCount, CurBlockMatrices, AddPart, StaticBlock_Lod_Top.Cube_Vertex, StaticBlock_Lod_Top.Cube_Index, StaticBlock_Lod_Top.Cube_UV);
             CurBlockPro.Lod_Middle = VertexCombine(BlockCount, CurBlockMatrices, AddPart, StaticBlock_Lod_Middle.Cube_Vertex, StaticBlock_Lod_Middle.Cube_Index, StaticBlock_Lod_Middle.Cube_UV);
             CurBlockPro.lodLayer = LodLayer.NULL;
@@ -237,6 +246,29 @@ public class GenPerlinNoiseMap : MonoBehaviour
         BreakBlockPro.PartOffect = new Vector3(BreakPart.x, 0, BreakPart.z) * 50 + new Vector3(25, 0, 25);
         PartBlocks[BreakBlockPro].Add(BlockMatrix);
         RefreshCurBlocks(BreakPart, true);
+    }
+    private float HashToOffset(int seed, float multiplier)
+    {
+        uint s = (uint)seed;
+        s ^= s << 13;
+        s ^= s >> 17;
+        s ^= s << 5;
+        return s % 100000 * multiplier;
+    }
+    public bool HasBlockAt(Vector3Int pos)
+    {
+        float seedOffsetX = HashToOffset(seed, 0.001f);
+        float seedOffsetY = HashToOffset(seed + 1, 0.001f);
+        float noiseValue = Mathf.PerlinNoise(pos.x * scale + seedOffsetX, pos.z * scale + seedOffsetY);
+        int groundHeight = Mathf.FloorToInt(noiseValue * 10);
+        return pos.y <= groundHeight;
+    }
+    public int GetGroundHeightAt(float x, float z)
+    {
+        float seedOffsetX = HashToOffset(seed, 0.001f);
+        float seedOffsetY = HashToOffset(seed + 1, 0.001f);
+        float noiseValue = Mathf.PerlinNoise(x * scale + seedOffsetX, z * scale + seedOffsetY);
+        return Mathf.FloorToInt(noiseValue * 10) + 1;
     }
 }
 [BurstCompile]

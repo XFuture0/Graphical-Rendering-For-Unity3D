@@ -5,22 +5,68 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     public float Speed;
-    public float JumpSpeed;
+    public float JumpForce = 8f;
     public float MouseSensitivityX;
     public float MouseSensitivityY;
     private float YRotation;
     private float XRotation;
+    private float verticalVelocity;
+    private bool isBagOpen = false;
+    private PhysicsCheck_Block physicsCheck;
+    private void Awake()
+    {
+        physicsCheck = GetComponent<PhysicsCheck_Block>();
+    }
+    private int selectedSlot = 1;
+
     private void Update()
     {
         BreakBlock();
         CreateBlock();
+        ToggleBag();
+        HandleNumberKeys();
+    }
+
+    private void HandleNumberKeys()
+    {
+        int number = InputManager.Instance.GetKeyDown_Number();
+        if (number > 0)
+        {
+            var rect = UIManager.Instance.SelectSlot.GetComponent<RectTransform>();
+            rect.anchoredPosition = new Vector2(720 + (number - 1) * 140, rect.anchoredPosition.y);
+            selectedSlot = number;
+        }
+    }
+
+    private void ToggleBag()
+    {
+        if (InputManager.Instance.GetKeyDown_E())
+        {
+            isBagOpen = !isBagOpen;
+            UIManager.Instance.PlayerBag.SetActive(isBagOpen);
+            if (isBagOpen)
+            {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
+            else
+            {
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+        }
     }
     private void FixedUpdate()
     {
+        ApplyGravity();
         ViewRoll();
-        Move();
-        Jump();
+        if (!UIManager.Instance.PlayerBag.activeSelf)
+        {
+            Move();
+            HandleJump();
+        }
     }
+
     private void Move()
     {
         float MoveHorizontal = InputManager.Instance.GetKeyDown_Horizontal();
@@ -31,9 +77,23 @@ public class PlayerController : MonoBehaviour
         MoveRight.y = 0;
         Vector3 MoveDirection = MoveForward * MoveVertical + MoveRight * MoveHorizontal;
         MoveDirection.Normalize();
-        if(MoveDirection != Vector3.zero)
+
+        if (MoveDirection != Vector3.zero)
         {
-            transform.position += MoveDirection * Speed * Time.deltaTime;
+            Vector3 delta = MoveDirection * Speed * Time.deltaTime;
+
+            if (physicsCheck != null)
+            {
+                if (physicsCheck.IsHitForward && delta.z > 0) delta.z = 0;
+                if (physicsCheck.IsHitBack && delta.z < 0) delta.z = 0;
+                if (physicsCheck.IsHitRight && delta.x > 0) delta.x = 0;
+                if (physicsCheck.IsHitLeft && delta.x < 0) delta.x = 0;
+            }
+            delta.y = 0;
+            if(Mathf.Abs(delta.x) >= 0.01f || Mathf.Abs(delta.z) >= 0.01f)
+            {
+                transform.position += delta;
+            }
         }
     }
     private void ViewRoll()
@@ -45,16 +105,29 @@ public class PlayerController : MonoBehaviour
         XRotation = Mathf.Clamp(XRotation, -90, 90);
         transform.rotation = Quaternion.Euler(XRotation, YRotation, 0);
     }
-    private void Jump()
+    private void HandleJump()
     {
-        if(InputManager.Instance.GetKey_Space())
+        if (InputManager.Instance.GetKey_Space() && physicsCheck != null && physicsCheck.IsGround)
         {
-            transform.position += Vector3.up * JumpSpeed * Time.deltaTime;
+            verticalVelocity = JumpForce;
         }
+    }
+
+    private void ApplyGravity()
+    {
+        if (physicsCheck != null && physicsCheck.IsGround && verticalVelocity <= 0)
+        {
+            verticalVelocity = 0;
+        }
+        else
+        {
+            verticalVelocity += GameSetting.Jumpgravity * Time.deltaTime;
+        }
+        transform.position += Vector3.up * verticalVelocity * Time.deltaTime;
     }
     private void BreakBlock()
     {
-        if (InputManager.Instance.GetKeyDown_MouseLeft())
+        if (InputManager.Instance.GetKeyDown_MouseLeft() && !UIManager.Instance.PlayerBag.activeSelf)
         {
             BlockGraphicsRayCastHit hit = new BlockGraphicsRayCastHit();
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -66,33 +139,39 @@ public class PlayerController : MonoBehaviour
     }
     private void CreateBlock()
     {
-        if (InputManager.Instance.GetKeyDown_MouseRight())
+        if (InputManager.Instance.GetKeyDown_MouseRight() && !UIManager.Instance.PlayerBag.activeSelf)
         {
             BlockGraphicsRayCastHit hit = new BlockGraphicsRayCastHit();
-            List<Vector3> Angles = new List<Vector3>(3);
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (GraphicsRayCast.TryBlockGraphicsRayCast(ray, GraphicsRayCast.GetRayCastPartBlocks(ray, MapManager.Instance.genPerlinNoiseMap.PartBlocks), out hit))
             {
-                Vector3 LocalRay = ray.origin - hit.Position.GetPosition();
-                if (Vector3.Dot(LocalRay, new Vector3(1, 0, 0)) > 0) Angles.Add(new Vector3(1,0,0));
-                if (Vector3.Dot(LocalRay, new Vector3(-1, 0, 0)) > 0) Angles.Add(new Vector3(-1,0,0));
-                if (Vector3.Dot(LocalRay, new Vector3(0, 0, 1)) > 0) Angles.Add(new Vector3(0,0,1));
-                if (Vector3.Dot(LocalRay, new Vector3(0, 0, -1)) > 0) Angles.Add(new Vector3(0,0,-1));
-                if (Vector3.Dot(LocalRay, new Vector3(0, 1, 0)) > 0) Angles.Add(new Vector3(0, 1, 0));
-                if (Vector3.Dot(LocalRay, new Vector3(0, -1, 0)) > 0) Angles.Add(new Vector3(0, -1, 0));
-                float MinAngle = int.MaxValue;
-                Vector3 AngleVector = Vector3.zero;
-                foreach (var Angle in Angles)
-                {
-                    if(Vector3.Angle(Angle, LocalRay) < MinAngle)
-                    {
-                        MinAngle = Vector3.Angle(Angle, LocalRay);
-                        AngleVector = Angle;
-                    }
-                }
-                hit.Position.SetTRS(hit.Position.GetPosition() + AngleVector, Quaternion.identity,new Vector3(1,1,1));
-                MapManager.Instance.CreateBlocks(hit.Position);
+                Vector3 blockCenter = hit.Position.GetPosition();
+                Vector3 hitPoint = ray.origin + ray.direction * hit.Distance;
+                Vector3 localHit = hitPoint - blockCenter;
+                Vector3 faceNormal = GetFaceNormal(ray.direction, localHit);
+                Vector3 newBlockPos = blockCenter + faceNormal;
+                Matrix4x4 newBlock = Matrix4x4.TRS(newBlockPos, Quaternion.identity, Vector3.one);
+                MapManager.Instance.CreateBlocks(newBlock, selectedSlot);
             }
         }
+    }
+    private Vector3 GetFaceNormal(Vector3 rayDir, Vector3 localHit)
+    {
+        localHit.x = Mathf.Clamp(localHit.x, -0.5f, 0.5f);
+        localHit.y = Mathf.Clamp(localHit.y, -0.5f, 0.5f);
+        localHit.z = Mathf.Clamp(localHit.z, -0.5f, 0.5f);
+        float distToPosX = 0.5f - localHit.x;
+        float distToNegX = localHit.x + 0.5f;
+        float distToPosY = 0.5f - localHit.y;
+        float distToNegY = localHit.y + 0.5f;
+        float distToPosZ = 0.5f - localHit.z;
+        float distToNegZ = localHit.z + 0.5f;
+        float minDist = Mathf.Min(distToPosX, distToNegX, distToPosY, distToNegY, distToPosZ, distToNegZ);
+        if (minDist == distToPosX) return Vector3.right;
+        if (minDist == distToNegX) return Vector3.left;
+        if (minDist == distToPosY) return Vector3.up;
+        if (minDist == distToNegY) return Vector3.down;
+        if (minDist == distToPosZ) return Vector3.forward;
+        return Vector3.back;
     }
 }
