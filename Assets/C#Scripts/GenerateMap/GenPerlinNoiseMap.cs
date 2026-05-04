@@ -15,7 +15,6 @@ public class PartBlockPro
     public Vector2 CombinePart;
     public Mesh PartMesh;
     public Mesh Lod_Top;
-    public Mesh Lod_Middle;
     public Bounds PartBound;
     public LodLayer lodLayer;
     public Matrix4x4[] CachedMatrices;
@@ -36,7 +35,6 @@ public class PartBlockPro
     {
         UnityEngine.Object.Destroy(PartMesh);
         UnityEngine.Object.Destroy(Lod_Top);
-        UnityEngine.Object.Destroy(Lod_Middle);
     }
 }
 public class GenPerlinNoiseMap : MonoBehaviour
@@ -47,7 +45,6 @@ public class GenPerlinNoiseMap : MonoBehaviour
     public float ViewDistance;
     public int LayerCount;
     public int Lod1_LayerCount;
-    public int Lod2_LayerCount;
     public int AtlasGridSize = 4;
     private int seed;
     private Vector3 CurPart;
@@ -173,8 +170,6 @@ public class GenPerlinNoiseMap : MonoBehaviour
         CurBlockPro.Count = BlockCount;
         CurBlockPro.CachedMatrices = CurBlockMatrices.ToArray();
         CurBlockPro.Lod_Top = VertexCombine(BlockCount, CurBlockMatrices, BlockTypes, AddPart, StaticBlock_Lod_Top.Cube_Vertex, StaticBlock_Lod_Top.Cube_Index, StaticBlock_Lod_Top.Cube_UV);
-        //CurBlockPro.Lod_Middle = VertexCombine(BlockCount, CurBlockMatrices, BlockTypes, AddPart, StaticBlock_Lod_Middle.Cube_Vertex, StaticBlock_Lod_Middle.Cube_Index, StaticBlock_Lod_Middle.Cube_UV);
-
         CurBlockPro.lodLayer = LodLayer.NULL;
         CurBlockPro.PartBound = new Bounds(CurBlockPro.PartOffect, new Vector3(50.0f, 20.0f, 50.0f));
         PartBlocks.Add(CurBlockPro, CurBlockMatrices);
@@ -228,7 +223,7 @@ public class GenPerlinNoiseMap : MonoBehaviour
             CombineUV = CombineUV,
             CombinesIndex = CombineIndex,
             AtlasGridSize = AtlasGridSize,
-            VerticesPerFace = 4  // 每个面4个顶点
+            VerticesPerFace = 4 
         };
         var CombineMeshJobHandle = combineMeshJob.Schedule();
         CombineMeshJobHandle.Complete();
@@ -262,16 +257,7 @@ public class GenPerlinNoiseMap : MonoBehaviour
             PartBlockPro.lodLayer = LodLayer.Lod_Top;
             PartBlockPro.PartMesh = PartBlockPro.Lod_Top;
         }
-        else if(LodDistance > Lod1_LayerCount && LodDistance <= Lod2_LayerCount && PartBlockPro.lodLayer != LodLayer.Lod_Middle)
-        {
-            if (PartBlockPro.PartMesh != null)
-            {
-                Destroy(PartBlockPro.PartMesh);
-            }
-            PartBlockPro.lodLayer = LodLayer.Lod_Middle;
-            PartBlockPro.PartMesh = PartBlockPro.Lod_Middle;
-        }
-        else if(LodDistance > Lod2_LayerCount && PartBlockPro.lodLayer != LodLayer.Lod_Bottom)
+        else if(LodDistance > Lod1_LayerCount && PartBlockPro.lodLayer != LodLayer.Lod_Bottom)
         {
             if (PartBlockPro.PartMesh != null)
             {
@@ -294,17 +280,12 @@ public class GenPerlinNoiseMap : MonoBehaviour
                 {
                     Destroy(PartBlockPro_Key.Lod_Top);
                 }
-                if (PartBlockPro_Key.Lod_Middle != null)
-                {
-                    Destroy(PartBlockPro_Key.Lod_Middle);
-                }
                 if (PartBlockPro_Key.PartMesh != null)
                 {
                     Destroy(PartBlockPro_Key.PartMesh);
                 }
                 List<BlockType> blockTypes = CalculateBlockTypes(PartBlocks[PartBlockPro_Key]);
                 PartBlockPro_Key.Lod_Top = VertexCombine(PartBlockPro_Key.Count, PartBlocks[PartBlockPro_Key], blockTypes, PartBlockPro_Key.CombinePart, StaticBlock_Lod_Top.Cube_Vertex, StaticBlock_Lod_Top.Cube_Index, StaticBlock_Lod_Top.Cube_UV);
-                //PartBlockPro_Key.Lod_Middle = VertexCombine(PartBlockPro_Key.Count, PartBlocks[PartBlockPro_Key], blockTypes, PartBlockPro_Key.CombinePart, StaticBlock_Lod_Middle.Cube_Vertex, StaticBlock_Lod_Middle.Cube_Index, StaticBlock_Lod_Middle.Cube_UV);
                 PartBlockPro_Key.lodLayer = LodLayer.NULL;
             }
         }
