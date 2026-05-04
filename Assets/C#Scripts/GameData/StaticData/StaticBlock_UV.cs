@@ -60,4 +60,13 @@ public static class StaticBlock_UV
         }
         return BlockMaterialConfigs[BlockType.Dirt];
     }
+    public static BlockType GetBlockTypeByHeight(int y, int maxHeight)
+    {
+        if (y == maxHeight)
+            return BlockType.Grass;    
+        else if (y >= maxHeight - 3)
+            return BlockType.Dirt;    
+        else
+            return BlockType.Stone;  
+    }  
 }

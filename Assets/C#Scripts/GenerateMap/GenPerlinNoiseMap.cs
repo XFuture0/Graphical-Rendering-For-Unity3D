@@ -156,7 +156,7 @@ public class GenPerlinNoiseMap : MonoBehaviour
                 for (int k = 0; k <= MountainHigh; k++)
                 {
                     BlockMatrices.Add(Matrix4x4.TRS(new Vector3(50 * AddPart.x + m, k, 50 * AddPart.y + n), Quaternion.identity, Vector3.one));
-                    BlockType blockType = GetBlockTypeByHeight(k, MountainHigh);
+                    BlockType blockType = StaticBlock_UV.GetBlockTypeByHeight(k, MountainHigh);
                     BlockTypes.Add(blockType);
 
                     BlockCount++;
@@ -174,15 +174,6 @@ public class GenPerlinNoiseMap : MonoBehaviour
         CurBlockPro.PartBound = new Bounds(CurBlockPro.PartOffect, new Vector3(50.0f, 20.0f, 50.0f));
         PartBlocks.Add(CurBlockPro, CurBlockMatrices);
     }
-    private BlockType GetBlockTypeByHeight(int y, int maxHeight)
-    {
-        if (y == maxHeight)
-            return BlockType.Grass;    
-        else if (y >= maxHeight - 3)
-            return BlockType.Dirt;    
-        else
-            return BlockType.Stone;  
-    }  
 
     private Mesh VertexCombine(int CombineCount, List<Matrix4x4> Transform, List<BlockType> BlockTypeList, Vector2 CombinePart, Vector3[] Cube_Vertex, int[] Cube_Index, Vector2[] Cube_UV)
     {
@@ -280,10 +271,6 @@ public class GenPerlinNoiseMap : MonoBehaviour
                 {
                     Destroy(PartBlockPro_Key.Lod_Top);
                 }
-                if (PartBlockPro_Key.PartMesh != null)
-                {
-                    Destroy(PartBlockPro_Key.PartMesh);
-                }
                 List<BlockType> blockTypes = CalculateBlockTypes(PartBlocks[PartBlockPro_Key]);
                 PartBlockPro_Key.Lod_Top = VertexCombine(PartBlockPro_Key.Count, PartBlocks[PartBlockPro_Key], blockTypes, PartBlockPro_Key.CombinePart, StaticBlock_Lod_Top.Cube_Vertex, StaticBlock_Lod_Top.Cube_Index, StaticBlock_Lod_Top.Cube_UV);
                 PartBlockPro_Key.lodLayer = LodLayer.NULL;
@@ -303,7 +290,7 @@ public class GenPerlinNoiseMap : MonoBehaviour
             float noiseValue = (float)Math.Pow(2, Mathf.PerlinNoise(pos.x * scale_Mountain + seedOffsetX, pos.z * scale_Mountain + seedOffsetY) * height_Mountain);
             int maxHeight = Mathf.FloorToInt(noiseValue);
 
-            BlockType blockType = GetBlockTypeByHeight(y, maxHeight);
+            BlockType blockType = StaticBlock_UV.GetBlockTypeByHeight(y, maxHeight);
             blockTypes.Add(blockType);
         }
 
