@@ -14494,11 +14494,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scale_Mountain: 0.03
   height_Mountain: 6
-  mat: {fileID: 2100000, guid: 0ac8f00dd460d9d4b952b99258707f45, type: 2}
+  mat: {fileID: 2100000, guid: 1e7023b891dbaa347bf676762f47d90d, type: 2}
   ViewDistance: 200
   LayerCount: 3
   Lod1_LayerCount: 4
   Lod2_LayerCount: 6
+  AtlasGridSize: 4
 --- !u!4 &2120121018
 Transform:
   m_ObjectHideFlags: 0

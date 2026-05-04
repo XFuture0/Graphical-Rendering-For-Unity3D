@@ -158,8 +158,28 @@ public class TextureAtlasGenerator : EditorWindow
 
     private Texture2D GetReadableTexture(Texture2D source, int targetWidth, int targetHeight)
     {
-        // 创建可读取的副本
-        RenderTexture rt = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Linear);
+        // 首先尝试直接获取像素（如果纹理已标记为可读）
+        try
+        {
+            Color[] pixels = source.GetPixels();
+            if (pixels != null && pixels.Length > 0)
+            {
+                // 纹理已经是可读的，直接使用
+                if (source.width == targetWidth && source.height == targetHeight)
+                {
+                    return source;
+                }
+                // 需要缩放
+                return ScaleTexture(source, targetWidth, targetHeight);
+            }
+        }
+        catch
+        {
+            // 纹理不可读，继续下面的方法
+        }
+
+        // 使用 RenderTexture 方法（修正颜色空间）
+        RenderTexture rt = RenderTexture.GetTemporary(source.width, source.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
         Graphics.Blit(source, rt);
 
         RenderTexture previous = RenderTexture.active;
@@ -186,7 +206,8 @@ public class TextureAtlasGenerator : EditorWindow
     private Texture2D ScaleTexture(Texture2D source, int width, int height)
     {
         source.filterMode = filterMode;
-        RenderTexture rt = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.Default, RenderTextureReadWrite.Linear);
+        // 使用 sRGB 颜色空间而不是 Linear
+        RenderTexture rt = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
         rt.filterMode = filterMode;
 
         RenderTexture.active = rt;
