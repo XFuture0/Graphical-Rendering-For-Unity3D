@@ -51,7 +51,7 @@ public class GenPerlinNoiseMap : MonoBehaviour
     private int seed;
     private Vector3 CurPart;
     public Dictionary<PartBlockPro,List<Matrix4x4>> PartBlocks = new Dictionary<PartBlockPro,List<Matrix4x4>>();
-    private List<Vector3> PartBlockDelList = new List<Vector3>();
+    private List<PartBlockPro> PartBlockDelList = new List<PartBlockPro>();
     public void InitMap(int Seed)
     {
         seed = Seed;
@@ -74,26 +74,26 @@ public class GenPerlinNoiseMap : MonoBehaviour
                 {
                     Curpart -= new Vector2(0, 1);
                     AddGenPerlinNoiseMapPer(Curpart);
-                    yield return new WaitForSeconds(0.2f);
+                    yield return new WaitForSeconds(0.1f);
                 }
                 for (int i = 0; i < RoundCount; i++)
                 {
                     Curpart -= new Vector2(1, 0);
                     AddGenPerlinNoiseMapPer(Curpart);
-                    yield return new WaitForSeconds(0.2f);
+                    yield return new WaitForSeconds(0.1f);
                 }
                 RoundCount++;
                 for (int i = 0; i < RoundCount; i++)
                 {
                     Curpart += new Vector2(0, 1);
                     AddGenPerlinNoiseMapPer(Curpart);
-                    yield return new WaitForSeconds(0.2f);
+                    yield return new WaitForSeconds(0.1f);
                 }
                 for (int i = 0; i < RoundCount; i++)
                 {
                     Curpart += new Vector2(1, 0);
                     AddGenPerlinNoiseMapPer(Curpart);
-                    yield return new WaitForSeconds(0.2f);
+                    yield return new WaitForSeconds(0.1f);
                 }
                 RoundCount++;
                 CurPartCount += 3 * RoundCount - 3;
@@ -103,15 +103,15 @@ public class GenPerlinNoiseMap : MonoBehaviour
                 if (Vector2.Distance(part.CombinePart, Curpart) > 6)
                 {
                     part.DestroyAllMeshes();
-                    PartBlockDelList.Add(part.PartOffect);
+                    PartBlockDelList.Add(part);
                 }
             }
             foreach (var part in PartBlockDelList)
             {
-                PartBlocks.Remove(new PartBlockPro(part));
+                PartBlocks.Remove(part);
             }
             PartBlockDelList.Clear();
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(0.5f);
         }
     }
     private void Update()
@@ -211,8 +211,8 @@ public class GenPerlinNoiseMap : MonoBehaviour
         CombineVertex.Dispose();
         CombineUV.Dispose();
         CombineIndex.Dispose();
-        newMesh.RecalculateNormals();  // 修复法线计算
-        newMesh.RecalculateBounds();   // 修复包围盒计算
+        newMesh.RecalculateNormals(); 
+        newMesh.RecalculateBounds();  
         return newMesh;
     }
     private void RefreshPartBlockLodLayer(PartBlockPro PartBlockPro, List<Matrix4x4> Transform, Vector3 CurPart, Vector3 PartOffect)
@@ -223,18 +223,30 @@ public class GenPerlinNoiseMap : MonoBehaviour
         if (PartOffect_Normal.x > CurPart.x && IsOffectX || PartOffect_Normal.z >CurPart.z && !IsOffectX) LodDistance++;
         if (LodDistance <= Lod1_LayerCount && PartBlockPro.lodLayer != LodLayer.Lod_Top)
         {
+            if (PartBlockPro.PartMesh != null)
+            {
+                Destroy(PartBlockPro.PartMesh);
+            }
             PartBlockPro.lodLayer = LodLayer.Lod_Top;
             PartBlockPro.PartMesh = PartBlockPro.Lod_Top;
         }
         else if(LodDistance > Lod1_LayerCount && LodDistance <= Lod2_LayerCount && PartBlockPro.lodLayer != LodLayer.Lod_Middle)
         {
+            if (PartBlockPro.PartMesh != null)
+            {
+                Destroy(PartBlockPro.PartMesh);
+            }
             PartBlockPro.lodLayer = LodLayer.Lod_Middle;
             PartBlockPro.PartMesh = PartBlockPro.Lod_Middle;
         }
         else if(LodDistance > Lod2_LayerCount && PartBlockPro.lodLayer != LodLayer.Lod_Bottom)
         {
+            if (PartBlockPro.PartMesh != null)
+            {
+                Destroy(PartBlockPro.PartMesh);
+            }
             PartBlockPro.lodLayer = LodLayer.Lod_Bottom;
-            PartBlockPro.PartMesh = new Mesh();
+            PartBlockPro.PartMesh = null;
         }
     }
     private void RefreshCurBlocks(Vector3 BreakPart,bool IsCreate)
@@ -246,6 +258,18 @@ public class GenPerlinNoiseMap : MonoBehaviour
             {
                 if(IsCreate) PartBlockPro_Key.Count++;
                 else if(!IsCreate) PartBlockPro_Key.Count--;
+                if (PartBlockPro_Key.Lod_Top != null)
+                {
+                    Destroy(PartBlockPro_Key.Lod_Top);
+                }
+                if (PartBlockPro_Key.Lod_Middle != null)
+                {
+                    Destroy(PartBlockPro_Key.Lod_Middle);
+                }
+                if (PartBlockPro_Key.PartMesh != null)
+                {
+                    Destroy(PartBlockPro_Key.PartMesh);
+                }
                 PartBlockPro_Key.Lod_Top = VertexCombine(PartBlockPro_Key.Count, PartBlocks[PartBlockPro_Key], PartBlockPro_Key.CombinePart, StaticBlock_Lod_Top.Cube_Vertex, StaticBlock_Lod_Top.Cube_Index, StaticBlock_Lod_Top.Cube_UV);
                 PartBlockPro_Key.Lod_Middle = VertexCombine(PartBlockPro_Key.Count, PartBlocks[PartBlockPro_Key], PartBlockPro_Key.CombinePart, StaticBlock_Lod_Middle.Cube_Vertex, StaticBlock_Lod_Middle.Cube_Index, StaticBlock_Lod_Middle.Cube_UV);
                 PartBlockPro_Key.lodLayer = LodLayer.NULL;
