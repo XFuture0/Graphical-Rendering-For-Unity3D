@@ -54,4 +54,19 @@ public class MapManager : SingleTons<MapManager>
         }
         return false;
     }
+    public void DeleteMap()
+    {
+        if(Seed != 0)
+        {
+            for(int i = 0; i < mapData.MapSlots.Count; i++)
+            {
+                if(mapData.MapSlots[i].Seed == Seed)
+                {
+                    mapData.MapSlots.RemoveAt(i);
+                    break;
+                }
+            }
+        }
+        DataManager.Instance.SaveData();
+    }
 }
