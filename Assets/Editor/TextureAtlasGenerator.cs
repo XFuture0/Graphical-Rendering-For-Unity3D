@@ -206,17 +206,13 @@ public class TextureAtlasGenerator : EditorWindow
     private Texture2D ScaleTexture(Texture2D source, int width, int height)
     {
         source.filterMode = filterMode;
-        // 使用 sRGB 颜色空间而不是 Linear
         RenderTexture rt = RenderTexture.GetTemporary(width, height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
         rt.filterMode = filterMode;
-
         RenderTexture.active = rt;
         Graphics.Blit(source, rt);
-
         Texture2D result = new Texture2D(width, height, TextureFormat.RGBA32, false);
         result.ReadPixels(new Rect(0, 0, width, height), 0, 0);
         result.Apply();
-
         RenderTexture.active = null;
         RenderTexture.ReleaseTemporary(rt);
 

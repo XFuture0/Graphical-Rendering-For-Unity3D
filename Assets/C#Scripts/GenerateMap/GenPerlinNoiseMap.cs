@@ -8,13 +8,6 @@ using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Rendering;
-public enum BlockType
-{
-    Grass = 0,     
-    Dirt = 1,     
-    Stone = 2,   
-    Sand = 3,    
-}
 public class PartBlockPro
 {
     public int Count;
@@ -55,6 +48,7 @@ public class GenPerlinNoiseMap : MonoBehaviour
     public int LayerCount;
     public int Lod1_LayerCount;
     public int Lod2_LayerCount;
+    public int AtlasGridSize = 4;
     private int seed;
     private Vector3 CurPart;
     public Dictionary<PartBlockPro,List<Matrix4x4>> PartBlocks = new Dictionary<PartBlockPro,List<Matrix4x4>>();
@@ -151,7 +145,7 @@ public class GenPerlinNoiseMap : MonoBehaviour
         if(PartBlocks.ContainsKey(CheckBlock)) return;
         int BlockCount = 0;
         List<Matrix4x4> BlockMatrices = new List<Matrix4x4>(50000);
-        List<int> BlockTypes = new List<int>(50000);  // 记录每个方块的材质类型
+        List<BlockType> BlockTypes = new List<BlockType>(50000);  
 
         float seedOffsetX = HashToOffset(seed, 0.001f);
         float seedOffsetY = HashToOffset(seed + 1, 0.001f);
@@ -165,57 +159,53 @@ public class GenPerlinNoiseMap : MonoBehaviour
                 for (int k = 0; k <= MountainHigh; k++)
                 {
                     BlockMatrices.Add(Matrix4x4.TRS(new Vector3(50 * AddPart.x + m, k, 50 * AddPart.y + n), Quaternion.identity, Vector3.one));
-
-                    // 根据高度确定材质类型
                     BlockType blockType = GetBlockTypeByHeight(k, MountainHigh);
-                    BlockTypes.Add((int)blockType);
+                    BlockTypes.Add(blockType);
 
                     BlockCount++;
                 }
             }
         }
-
         var CurBlockPro = new PartBlockPro(new Vector3(50 * AddPart.x + 25, 0, 50 * AddPart.y + 25));
         CurBlockPro.CombinePart = AddPart;
         var CurBlockMatrices = new List<Matrix4x4>(BlockCount);
         CurBlockMatrices.AddRange(BlockMatrices);
         CurBlockPro.Count = BlockCount;
         CurBlockPro.CachedMatrices = CurBlockMatrices.ToArray();
-
-        // 传递 BlockTypes 到 VertexCombine
         CurBlockPro.Lod_Top = VertexCombine(BlockCount, CurBlockMatrices, BlockTypes, AddPart, StaticBlock_Lod_Top.Cube_Vertex, StaticBlock_Lod_Top.Cube_Index, StaticBlock_Lod_Top.Cube_UV);
-        CurBlockPro.Lod_Middle = VertexCombine(BlockCount, CurBlockMatrices, BlockTypes, AddPart, StaticBlock_Lod_Middle.Cube_Vertex, StaticBlock_Lod_Middle.Cube_Index, StaticBlock_Lod_Middle.Cube_UV);
+        //CurBlockPro.Lod_Middle = VertexCombine(BlockCount, CurBlockMatrices, BlockTypes, AddPart, StaticBlock_Lod_Middle.Cube_Vertex, StaticBlock_Lod_Middle.Cube_Index, StaticBlock_Lod_Middle.Cube_UV);
 
         CurBlockPro.lodLayer = LodLayer.NULL;
         CurBlockPro.PartBound = new Bounds(CurBlockPro.PartOffect, new Vector3(50.0f, 20.0f, 50.0f));
         PartBlocks.Add(CurBlockPro, CurBlockMatrices);
     }
-
-    // 根据高度获取方块类型
     private BlockType GetBlockTypeByHeight(int y, int maxHeight)
     {
         if (y == maxHeight)
-            return BlockType.Grass;      // 最顶层 - 草地
+            return BlockType.Grass;    
         else if (y >= maxHeight - 3)
-            return BlockType.Dirt;       // 顶层往下3格 - 泥土
+            return BlockType.Dirt;    
         else
-            return BlockType.Stone;      // 更深 - 石头
-    }
-    public int AtlasGridSize = 4;  // 图集网格大小，默认4x4
+            return BlockType.Stone;  
+    }  
 
-    private Mesh VertexCombine(int CombineCount, List<Matrix4x4> Transform, List<int> BlockTypeList, Vector2 CombinePart, Vector3[] Cube_Vertex, int[] Cube_Index, Vector2[] Cube_UV)
+    private Mesh VertexCombine(int CombineCount, List<Matrix4x4> Transform, List<BlockType> BlockTypeList, Vector2 CombinePart, Vector3[] Cube_Vertex, int[] Cube_Index, Vector2[] Cube_UV)
     {
         Mesh newMesh = new Mesh();
         newMesh.indexFormat = IndexFormat.UInt32;
         NativeArray<Vector3> Position = new NativeArray<Vector3>(CombineCount, Allocator.TempJob);
-        NativeArray<int> BlockTypes = new NativeArray<int>(CombineCount, Allocator.TempJob);
+        NativeArray<int> BlockFaceMaterials = new NativeArray<int>(CombineCount * 6, Allocator.TempJob);
 
         for(int i = 0; i < Transform.Count && i < CombineCount; i++)
         {
             Position[i] = Transform[i].GetPosition() - new Vector3(CombinePart.x,0,CombinePart.y) * 50;
-            BlockTypes[i] = BlockTypeList[i];
+            var materialConfig = StaticBlock_UV.GetBlockMaterialConfig(BlockTypeList[i]);
+            int faceMaterialStartIndex = i * 6;
+            for (int face = 0; face < 6; face++)
+            {
+                BlockFaceMaterials[faceMaterialStartIndex + face] = materialConfig.FaceMaterials[face];
+            }
         }
-
         NativeArray<Vector2> Mesh_UV = new NativeArray<Vector2>(Cube_UV.Length, Allocator.TempJob);
         NativeArray<Vector3> Mesh_Vertex = new NativeArray<Vector3>(Cube_Vertex.Length, Allocator.TempJob);
         NativeArray<int> Mesh_Index = new NativeArray<int>(Cube_Index.Length, Allocator.TempJob);
@@ -229,7 +219,7 @@ public class GenPerlinNoiseMap : MonoBehaviour
         CombineMeshJob combineMeshJob = new CombineMeshJob
         {
             Position = Position,
-            BlockTypes = BlockTypes,
+            BlockFaceMaterials = BlockFaceMaterials,
             Mesh_Vertex = Mesh_Vertex,
             Mesh_UV = Mesh_UV,
             Mesh_Triangles = Mesh_Index,
@@ -237,24 +227,22 @@ public class GenPerlinNoiseMap : MonoBehaviour
             CombinesVertex = CombineVertex,
             CombineUV = CombineUV,
             CombinesIndex = CombineIndex,
-            AtlasGridSize = AtlasGridSize
+            AtlasGridSize = AtlasGridSize,
+            VerticesPerFace = 4  // 每个面4个顶点
         };
-
         var CombineMeshJobHandle = combineMeshJob.Schedule();
         CombineMeshJobHandle.Complete();
         newMesh.vertices = CombineVertex.ToArray();
         newMesh.triangles = CombineIndex.ToArray();
         newMesh.uv = CombineUV.ToArray();
-
         Position.Dispose();
-        BlockTypes.Dispose();
+        BlockFaceMaterials.Dispose();
         Mesh_UV.Dispose();
         Mesh_Vertex.Dispose();
         Mesh_Index.Dispose();
         CombineVertex.Dispose();
         CombineUV.Dispose();
         CombineIndex.Dispose();
-
         newMesh.RecalculateNormals();
         newMesh.RecalculateBounds();
         return newMesh;
@@ -314,35 +302,28 @@ public class GenPerlinNoiseMap : MonoBehaviour
                 {
                     Destroy(PartBlockPro_Key.PartMesh);
                 }
-
-                // 重新计算 BlockTypes
-                List<int> blockTypes = CalculateBlockTypes(PartBlocks[PartBlockPro_Key]);
-
+                List<BlockType> blockTypes = CalculateBlockTypes(PartBlocks[PartBlockPro_Key]);
                 PartBlockPro_Key.Lod_Top = VertexCombine(PartBlockPro_Key.Count, PartBlocks[PartBlockPro_Key], blockTypes, PartBlockPro_Key.CombinePart, StaticBlock_Lod_Top.Cube_Vertex, StaticBlock_Lod_Top.Cube_Index, StaticBlock_Lod_Top.Cube_UV);
-                PartBlockPro_Key.Lod_Middle = VertexCombine(PartBlockPro_Key.Count, PartBlocks[PartBlockPro_Key], blockTypes, PartBlockPro_Key.CombinePart, StaticBlock_Lod_Middle.Cube_Vertex, StaticBlock_Lod_Middle.Cube_Index, StaticBlock_Lod_Middle.Cube_UV);
+                //PartBlockPro_Key.Lod_Middle = VertexCombine(PartBlockPro_Key.Count, PartBlocks[PartBlockPro_Key], blockTypes, PartBlockPro_Key.CombinePart, StaticBlock_Lod_Middle.Cube_Vertex, StaticBlock_Lod_Middle.Cube_Index, StaticBlock_Lod_Middle.Cube_UV);
                 PartBlockPro_Key.lodLayer = LodLayer.NULL;
             }
         }
     }
-
-    // 根据方块位置列表计算材质类型
-    private List<int> CalculateBlockTypes(List<Matrix4x4> matrices)
+    private List<BlockType> CalculateBlockTypes(List<Matrix4x4> matrices)
     {
-        List<int> blockTypes = new List<int>(matrices.Count);
+        List<BlockType> blockTypes = new List<BlockType>(matrices.Count);
 
         foreach (var matrix in matrices)
         {
             Vector3 pos = matrix.GetPosition();
             int y = Mathf.FloorToInt(pos.y);
-
-            // 使用 PerlinNoise 重新计算该位置的最大高度
             float seedOffsetX = HashToOffset(seed, 0.001f);
             float seedOffsetY = HashToOffset(seed + 1, 0.001f);
             float noiseValue = (float)Math.Pow(2, Mathf.PerlinNoise(pos.x * scale_Mountain + seedOffsetX, pos.z * scale_Mountain + seedOffsetY) * height_Mountain);
             int maxHeight = Mathf.FloorToInt(noiseValue);
 
             BlockType blockType = GetBlockTypeByHeight(y, maxHeight);
-            blockTypes.Add((int)blockType);
+            blockTypes.Add(blockType);
         }
 
         return blockTypes;
@@ -393,7 +374,7 @@ public class GenPerlinNoiseMap : MonoBehaviour
 public struct CombineMeshJob : IJob
 {
     public NativeArray<Vector3> Position;
-    public NativeArray<int> BlockTypes;     
+    public NativeArray<int> BlockFaceMaterials;
     public int CombineCount;
     public NativeArray<Vector3> Mesh_Vertex;
     public NativeArray<Vector2> Mesh_UV;
@@ -401,31 +382,37 @@ public struct CombineMeshJob : IJob
     public NativeArray<Vector3> CombinesVertex;
     public NativeArray<Vector2> CombineUV;
     public NativeArray<int> CombinesIndex;
-    public int AtlasGridSize;           
+    public int AtlasGridSize;
+    public int VerticesPerFace;  
 
     public void Execute()
     {
         int TotalVertices = 0;
         int TotalIndex = 0;
-        float cellSize = 1.0f / AtlasGridSize;  
+        float cellSize = 1.0f / AtlasGridSize;
+        int facesPerCube = 6;
 
         for (int i = 0; i < CombineCount; i++)
         {
-            // 获取当前方块的材质类型
-            int blockType = BlockTypes[i];
-            int atlasX = blockType % AtlasGridSize;
-            int atlasY = blockType / AtlasGridSize;
+            int blockFaceStartIndex = i * facesPerCube;
 
-            for(int j = 0;j < Mesh_Vertex.Length; j++)
+            for (int face = 0; face < facesPerCube; face++)
             {
-                CombinesVertex[TotalVertices + j] = Mesh_Vertex[j] + Position[i];
-
-                // 计算图集UV
-                float2 baseUV = new float2(Mesh_UV[j].x, Mesh_UV[j].y);
-                CombineUV[TotalVertices + j] = new Vector2(
-                    baseUV.x * cellSize + atlasX * cellSize,
-                    baseUV.y * cellSize + atlasY * cellSize
-                );
+                int materialIndex = BlockFaceMaterials[blockFaceStartIndex + face];
+                int atlasX = materialIndex % AtlasGridSize;
+                int atlasY = materialIndex / AtlasGridSize;
+                int faceVertexStart = face * VerticesPerFace;
+                for (int v = 0; v < VerticesPerFace; v++)
+                {
+                    int meshVertexIndex = faceVertexStart + v;
+                    int combineVertexIndex = TotalVertices + faceVertexStart + v;
+                    CombinesVertex[combineVertexIndex] = Mesh_Vertex[meshVertexIndex] + Position[i];
+                    float2 baseUV = new float2(Mesh_UV[meshVertexIndex].x, Mesh_UV[meshVertexIndex].y);
+                    CombineUV[combineVertexIndex] = new Vector2(
+                        baseUV.x * cellSize + atlasX * cellSize,
+                        baseUV.y * cellSize + atlasY * cellSize
+                    );
+                }
             }
             for (int j = 0; j < Mesh_Triangles.Length; j++)
             {
