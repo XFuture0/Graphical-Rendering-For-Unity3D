@@ -152,7 +152,6 @@ public class GenPerlinNoiseMap : MonoBehaviour
             for (int n = 0; n < 50; n++)
             {
                 int MountainHigh = (int)Math.Pow(2,Mathf.PerlinNoise((50 * AddPart.x + m) * scale_Mountain + seedOffsetX, (50 * AddPart.y + n) * scale_Mountain + seedOffsetY) * height_Mountain);
-
                 for (int k = 0; k <= MountainHigh; k++)
                 {
                     BlockMatrices.Add(Matrix4x4.TRS(new Vector3(50 * AddPart.x + m, k, 50 * AddPart.y + n), Quaternion.identity, Vector3.one));
