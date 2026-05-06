@@ -23,4 +23,19 @@ public class SingleTons<T> : MonoBehaviour where T : SingleTons<T>
             instance = (T)this;
         }
     }
+    public static bool IsInitialized
+    {
+        get
+        {
+            return instance != null;
+        }
+    }
+    protected virtual void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
+        }
+    }
+
 }
