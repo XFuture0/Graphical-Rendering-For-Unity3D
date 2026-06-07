@@ -16,7 +16,11 @@ public class BagDataController : MonoBehaviour
     {
         views = GetComponent<BagCanvas>();
     }
-    private void Update()
+    public void OnEnable()
+    {
+        BagManager.Instance.UpdateBagEvent += UpdateBagPanel;
+    }
+    public void UpdateBagPanel()
     {
         views.UpdateBagDataOnPanel(UsedBagData.items, BagType.Used);
         if(UIManager.Instance.PlayerBag.activeSelf)
@@ -40,6 +44,14 @@ public class BagDataController : MonoBehaviour
         {
             UnUsedBagData.items[slotIndex].itemImage = sprite;
             UnUsedBagData.items[slotIndex].itemCount = count;
+        }
+        UpdateBagPanel();
+    }
+    public void OnDisable()
+    {
+        if(BagManager.Instance != null)
+        {
+            BagManager.Instance.UpdateBagEvent -= UpdateBagPanel;
         }
     }
 }

@@ -26,6 +26,7 @@ public class MapManager : SingleTons<MapManager>
         if(BagManager.Instance.UsedBagData.items[selectedSlot - 1] != null && BagManager.Instance.UsedBagData.items[selectedSlot - 1].itemCount > 0)
         {
             BagManager.Instance.UsedBagData.items[selectedSlot - 1].itemCount--;
+            BagManager.Instance.UpdateBagPanel();
             genPerlinNoiseMap.CreateBlocks(BlockMatrix);
         }
     }
@@ -50,6 +51,7 @@ public class MapManager : SingleTons<MapManager>
         if(Seed != 0)
         {
             genPerlinNoiseMap.InitMap(Seed);
+            BagManager.Instance.UpdateBagPanel();
             return true;
         }
         return false;

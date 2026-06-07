@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class BagManager : SingleTons<BagManager>
 {
     public BagData UsedBagData;
     public BagData UnUsedBagData;
+    public UnityAction UpdateBagEvent;
     public bool AddItem(Sprite sprite)
     {
         if (sprite == null) return false;
@@ -13,12 +15,14 @@ public class BagManager : SingleTons<BagManager>
         if (existingIndex != -1)
         {
             UsedBagData.items[existingIndex].itemCount++;
+            UpdateBagPanel();
             return true;
         }
         existingIndex = FindItemIndex(UnUsedBagData, sprite);
         if (existingIndex != -1)
         {
             UnUsedBagData.items[existingIndex].itemCount++;
+            UpdateBagPanel();
             return true;
         }
         int emptySlot = FindEmptySlot(UsedBagData);
@@ -29,6 +33,7 @@ public class BagManager : SingleTons<BagManager>
                 itemImage = sprite,
                 itemCount = 1
             };
+            UpdateBagPanel();
             return true;
         }
         emptySlot = FindEmptySlot(UnUsedBagData);
@@ -39,6 +44,7 @@ public class BagManager : SingleTons<BagManager>
                 itemImage = sprite,
                 itemCount = 1
             };
+            UpdateBagPanel();
             return true;
         }
         return false;
@@ -64,5 +70,9 @@ public class BagManager : SingleTons<BagManager>
             }
         }
         return -1;
+    }
+    public void UpdateBagPanel()
+    {
+        UpdateBagEvent?.Invoke();
     }
 }

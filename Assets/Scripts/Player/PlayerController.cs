@@ -54,6 +54,7 @@ public class PlayerController : MonoBehaviour
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
             }
+            BagManager.Instance.UpdateBagPanel();
         }
     }
     private void FixedUpdate()
