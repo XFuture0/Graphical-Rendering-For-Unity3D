@@ -15,6 +15,9 @@ public class StartGameCanvs : MonoBehaviour
     public TMP_InputField SeedInput;
     public GameObject MapSlots;
     public GameObject MapSlotPrefab;
+    public GameObject MainMenuCanvs;
+    public GameObject PlayerCanvs;
+    public GameObject BagCanvs;
     private void Awake()
     {
         InitGameButton_Sel.onClick.AddListener(OnInitGame_Sel);
@@ -46,7 +49,9 @@ public class StartGameCanvs : MonoBehaviour
         bool success = MapManager.Instance.InitMap();
         if(success)
         {
-            UIManager.Instance.StartGameCanvs.SetActive(false);
+            PlayerCanvs.SetActive(true);
+            BagCanvs.SetActive(true);
+            gameObject.SetActive(false);
         }
     }
     private void OnDeleteMapButton_Sel()
@@ -60,8 +65,8 @@ public class StartGameCanvs : MonoBehaviour
     }
     private void OnBack_Sel()
     {
-        UIManager.Instance.StartGameCanvs.SetActive(false);
-        UIManager.Instance.MainMenuCanvs.SetActive(true);
+        gameObject.SetActive(false);
+        MainMenuCanvs.SetActive(true);
     }
     private void OnInitGame_Init()
     {
@@ -82,5 +87,9 @@ public class StartGameCanvs : MonoBehaviour
     private void OnBack_Init()
     {
         transform.GetChild(1).gameObject.SetActive(false);
+    }
+    public void SetStartGameCanvsActive(bool isActive)
+    {
+        gameObject.SetActive(isActive);
     }
 }

@@ -12,7 +12,7 @@ public class SeedSlot : MonoBehaviour
     {
         SelectButton.onClick.AddListener(() =>
         {
-            MapManager.Instance.SetSeed(int.Parse(SeedText.text));
+            MapManager.Instance.SetSeed(int.TryParse(SeedText.text, out int seed) ? seed : 11111);
         });
     }
 }

@@ -46,7 +46,6 @@ public class GenPerlinNoiseMap : MonoBehaviour
     public int LayerCount;
     public int Lod1_LayerCount;
     public int AtlasGridSize = 4;
-    public GameObject Tree;
     private int seed;
     private Vector3 CurPart;
     public Dictionary<PartBlockPro,List<Matrix4x4>> PartBlocks = new Dictionary<PartBlockPro,List<Matrix4x4>>();
@@ -55,7 +54,7 @@ public class GenPerlinNoiseMap : MonoBehaviour
     {
         seed = Seed;
         int height = GetGroundHeightAt(0, 0);
-        UIManager.Instance.InitGame(height);
+        EventMgr.Instance.EventTrigger(EventType.InitMap,height);
         StartCoroutine(InitGenMap());
     }
     private IEnumerator InitGenMap()
@@ -153,11 +152,6 @@ public class GenPerlinNoiseMap : MonoBehaviour
             for (int n = 0; n < 50; n++)
             {
                 int MountainHigh = (int)Math.Pow(2,Mathf.PerlinNoise((50 * AddPart.x + m) * scale_Mountain + seedOffsetX, (50 * AddPart.y + n) * scale_Mountain + seedOffsetY) * height_Mountain);
-                int SetTree = (int)(Mathf.PerlinNoise((50 * AddPart.x + m) * 0.7f + seedOffsetX, (50 * AddPart.y + n) * 0.5f + seedOffsetY) * 10);
-                if(SetTree > 7)
-                {
-                    Instantiate(Tree, new Vector3(50 * AddPart.x + m, MountainHigh + 1, 50 * AddPart.y + n), Quaternion.identity);
-                }
                 for (int k = 0; k <= MountainHigh; k++)
                 {
                     BlockMatrices.Add(Matrix4x4.TRS(new Vector3(50 * AddPart.x + m, k, 50 * AddPart.y + n), Quaternion.identity, Vector3.one));

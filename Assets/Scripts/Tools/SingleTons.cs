@@ -30,7 +30,7 @@ public class SingleTons<T> : MonoBehaviour where T : SingleTons<T>
             return instance != null;
         }
     }
-    protected virtual void OnDestory()
+    protected virtual void OnDestroy()
     {
         if (instance == this)
         {
