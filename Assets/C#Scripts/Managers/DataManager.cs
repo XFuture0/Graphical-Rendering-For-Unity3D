@@ -6,11 +6,9 @@ using System.Text;
 
 public class DataManager : SingleTons<DataManager>
 {
-    private BinaryFormatter formatter;
     protected override void Awake()
     {
         base.Awake();
-        formatter = new BinaryFormatter();
     }
     private void Start()
     {
