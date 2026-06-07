@@ -8,6 +8,6 @@ public class GameSetting : MonoBehaviour
     public static float Jumpgravity = -20f;
     private void Awake()
     {
-        Application.targetFrameRate = 60;//固定帧率为60
+        Application.targetFrameRate = 60;
     }
 }

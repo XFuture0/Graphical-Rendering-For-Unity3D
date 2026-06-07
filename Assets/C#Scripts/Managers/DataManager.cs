@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
+using System.Text;
 
 public class DataManager : SingleTons<DataManager>
 {
@@ -27,8 +28,8 @@ public class DataManager : SingleTons<DataManager>
         }
         using (FileStream PlayerDataFile = File.Open(Application.persistentDataPath + "/SaveData/MapData.txt", FileMode.Open))
         {
-            var Json = JsonUtility.ToJson(MapManager.Instance.mapData);
-            formatter.Serialize(PlayerDataFile, Json);
+            string json = JsonUtility.ToJson(MapManager.Instance.mapData, true);
+            PlayerDataFile.Write(Encoding.UTF8.GetBytes(json), 0, json.Length);
             PlayerDataFile.Close();
         }
     }
@@ -38,7 +39,10 @@ public class DataManager : SingleTons<DataManager>
         {
             using (FileStream PlayerDataFile = new FileStream(Application.persistentDataPath + "/SaveData/MapData.txt", FileMode.Open))
             {
-                JsonUtility.FromJsonOverwrite(formatter.Deserialize(PlayerDataFile).ToString(), MapManager.Instance.mapData);
+                byte[] bytes = new byte[PlayerDataFile.Length];
+                PlayerDataFile.Read(bytes, 0, (int)PlayerDataFile.Length);
+                string json = Encoding.UTF8.GetString(bytes);
+                JsonUtility.FromJsonOverwrite(json, MapManager.Instance.mapData);
                 PlayerDataFile.Close();
             }
         }
