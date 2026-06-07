@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -13,12 +14,11 @@ public class PlayerController : MonoBehaviour
     private float verticalVelocity;
     private bool isBagOpen = false;
     private PhysicsCheck_Block physicsCheck;
+    private int selectedSlot = 1;
     private void Awake()
     {
         physicsCheck = GetComponent<PhysicsCheck_Block>();
     }
-    private int selectedSlot = 1;
-
     private void Update()
     {
         BreakBlock();
@@ -26,14 +26,12 @@ public class PlayerController : MonoBehaviour
         ToggleBag();
         HandleNumberKeys();
     }
-
     private void HandleNumberKeys()
     {
         int number = InputManager.Instance.GetKeyDown_Number();
         if (number > 0)
         {
-            var rect = UIManager.Instance.SelectSlot.GetComponent<RectTransform>();
-            rect.anchoredPosition = new Vector2(720 + (number - 1) * 140, rect.anchoredPosition.y);
+            EventMgr.Instance.EventTrigger<int>(EventType.HandleSelectSlot,number);
             selectedSlot = number;
         }
     }
@@ -43,7 +41,7 @@ public class PlayerController : MonoBehaviour
         if (InputManager.Instance.GetKeyDown_E())
         {
             isBagOpen = !isBagOpen;
-            UIManager.Instance.PlayerBag.SetActive(isBagOpen);
+            EventMgr.Instance.EventTrigger(EventType.SetPlayerBagActive, isBagOpen);
             if (isBagOpen)
             {
                 Cursor.visible = true;
@@ -60,9 +58,9 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         ApplyGravity();
-        ViewRoll();
-        if (!UIManager.Instance.PlayerBag.activeSelf)
+        if (!isBagOpen)
         {
+            ViewRoll();
             Move();
             HandleJump();
         }
@@ -128,7 +126,7 @@ public class PlayerController : MonoBehaviour
     }
     private void BreakBlock()
     {
-        if (InputManager.Instance.GetKeyDown_MouseLeft() && !UIManager.Instance.PlayerBag.activeSelf)
+        if (InputManager.Instance.GetKeyDown_MouseLeft() && !isBagOpen)
         {
             BlockGraphicsRayCastHit hit = new BlockGraphicsRayCastHit();
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -140,7 +138,7 @@ public class PlayerController : MonoBehaviour
     }
     private void CreateBlock()
     {
-        if (InputManager.Instance.GetKeyDown_MouseRight() && !UIManager.Instance.PlayerBag.activeSelf)
+        if (InputManager.Instance.GetKeyDown_MouseRight() && !isBagOpen)
         {
             BlockGraphicsRayCastHit hit = new BlockGraphicsRayCastHit();
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

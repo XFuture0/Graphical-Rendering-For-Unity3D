@@ -54,7 +54,7 @@ public class GenPerlinNoiseMap : MonoBehaviour
     {
         seed = Seed;
         int height = GetGroundHeightAt(0, 0);
-        UIManager.Instance.InitGame(height);
+        EventMgr.Instance.EventTrigger(EventType.InitMap,height);
         StartCoroutine(InitGenMap());
     }
     private IEnumerator InitGenMap()

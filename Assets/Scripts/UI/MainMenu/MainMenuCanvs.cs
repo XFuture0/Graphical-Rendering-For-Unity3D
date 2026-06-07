@@ -9,6 +9,7 @@ public class MainMenuCanvs : MonoBehaviour
     public Button NetGameButton;
     public Button SettingButton;
     public Button QuitGameButton;
+    public GameObject StartGameCanvs;
     private void Awake()
     {
         StartGameButton.onClick.AddListener(OnStartGame);
@@ -18,8 +19,8 @@ public class MainMenuCanvs : MonoBehaviour
     }
     private void OnStartGame()
     {
-        UIManager.Instance.StartGameCanvs.SetActive(true);
-        UIManager.Instance.MainMenuCanvs.SetActive(false);
+        StartGameCanvs.SetActive(true);
+        gameObject.SetActive(false);
     }
     private void OnNetGame()
     {

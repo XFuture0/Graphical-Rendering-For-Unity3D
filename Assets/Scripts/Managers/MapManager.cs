@@ -52,6 +52,8 @@ public class MapManager : SingleTons<MapManager>
         {
             genPerlinNoiseMap.InitMap(Seed);
             BagManager.Instance.UpdateBagPanel();
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
             return true;
         }
         return false;

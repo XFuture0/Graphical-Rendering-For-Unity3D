@@ -23,7 +23,7 @@ public class BagDataController : MonoBehaviour
     public void UpdateBagPanel()
     {
         views.UpdateBagDataOnPanel(UsedBagData.items, BagType.Used);
-        if(UIManager.Instance.PlayerBag.activeSelf)
+        if(views.gameObject.activeSelf)
         {
             SyncToAllViews();
         }
