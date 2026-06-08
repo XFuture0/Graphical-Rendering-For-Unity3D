@@ -50,4 +50,16 @@ static class XLuaUnityDefaultConfig
     public static Func<MemberInfo, bool> SpanMembersFilter = IsSpanMember;
 
 #endif
+
+    // 黑名单 - 排除整个 Light 类（不生成 Wrap 代码）
+    [BlackList]
+    public static Func<MemberInfo, bool> LightClassFilter = (memberInfo) =>
+    {
+        // 如果成员属于 Light 类，则排除
+        if (memberInfo.DeclaringType == typeof(UnityEngine.Light))
+        {
+            return true;
+        }
+        return false;
+    };
 }
