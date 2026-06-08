@@ -1,0 +1,38 @@
+ManifestFileVersion: 0
+CRC: 3136739343
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 57ee06cf62e56b4e2b600bb7fa47bee1
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 2a9fa34b4371fcd7c439a044a8427e22
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: 57ee06cf62e56b4e2b600bb7fa47bee1
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 65
+  Script: {instanceID: 0}
+- Class: 134
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Prefabs/Item/Tree.prefab
+Dependencies: []

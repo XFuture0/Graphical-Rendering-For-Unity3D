@@ -20,6 +20,7 @@ public class LuaManager : SingleTons<LuaManager>
         }
         luaEnv = new LuaEnv();
         luaEnv.AddLoader(RefreshLoadPath);
+        luaEnv.AddLoader(RefreshABLoadPath);
     }
     public LuaTable Global
     {
@@ -50,6 +51,19 @@ public class LuaManager : SingleTons<LuaManager>
             Debug.Log("Lua文件不存在:" + path);
         }
         return null;
+    }
+    private byte[] RefreshABLoadPath(ref string FileName)
+    {
+        TextAsset Luatext = ABManager.Instance.LoadRes<TextAsset>("lua",FileName + ".lua");
+        if (Luatext != null)
+        {
+            return Luatext.bytes;
+        }
+        else
+        {
+            Debug.Log("AB文件不存在:" + FileName);
+            return null;
+        }
     }
     public void Tick()
     {
