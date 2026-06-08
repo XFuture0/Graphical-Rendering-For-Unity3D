@@ -6,18 +6,18 @@ public abstract class EventInfoBase
 {
 
 }
-public class EventInfo<T> : EventInfoBase
+public class EventInf<T> : EventInfoBase
 {
     public UnityAction<T> actions;
-    public EventInfo(UnityAction<T> action)
+    public EventInf(UnityAction<T> action)
     {
         actions += action;
     }
 }
-public class EventInfo : EventInfoBase
+public class EventInf : EventInfoBase
 {
     public UnityAction actions;
-    public EventInfo(UnityAction action)
+    public EventInf(UnityAction action)
     {
         actions += action;
     }
@@ -41,7 +41,7 @@ public class EventMgr : SingleTons<EventMgr>
     {
         if (eventDic.ContainsKey(eventName))
         {
-            (eventDic[eventName] as EventInfo<T>).actions?.Invoke(param);
+            (eventDic[eventName] as EventInf<T>).actions?.Invoke(param);
         }
     }
     /// <summary>
@@ -54,11 +54,11 @@ public class EventMgr : SingleTons<EventMgr>
     {
         if (eventDic.ContainsKey(name))
         {
-            (eventDic[name] as EventInfo<T>).actions += func;
+            (eventDic[name] as EventInf<T>).actions += func;
         }
         else
         {
-            eventDic.Add(name, new EventInfo<T>(func));
+            eventDic.Add(name, new EventInf<T>(func));
         }
     }
     /// <summary>
@@ -71,7 +71,7 @@ public class EventMgr : SingleTons<EventMgr>
     {
         if (eventDic.ContainsKey(name))
         {
-            (eventDic[name] as EventInfo<T>).actions -= func;
+            (eventDic[name] as EventInf<T>).actions -= func;
         }
     }
     #endregion
@@ -84,7 +84,7 @@ public class EventMgr : SingleTons<EventMgr>
     {
         if (eventDic.ContainsKey(eventName))
         {
-            (eventDic[eventName] as EventInfo).actions?.Invoke();
+            (eventDic[eventName] as EventInf).actions?.Invoke();
         }
     }
     /// <summary>
@@ -96,11 +96,11 @@ public class EventMgr : SingleTons<EventMgr>
     {
         if (eventDic.ContainsKey(name))
         {
-            (eventDic[name] as EventInfo).actions += func;
+            (eventDic[name] as EventInf).actions += func;
         }
         else
         {
-            eventDic.Add(name, new EventInfo(func));
+            eventDic.Add(name, new EventInf(func));
         }
     }
     /// <summary>
@@ -112,7 +112,7 @@ public class EventMgr : SingleTons<EventMgr>
     {
         if (eventDic.ContainsKey(name))
         {
-            (eventDic[name] as EventInfo).actions -= func;
+            (eventDic[name] as EventInf).actions -= func;
         }
     }
     /// <summary>
