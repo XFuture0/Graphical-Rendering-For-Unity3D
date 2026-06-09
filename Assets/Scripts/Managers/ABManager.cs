@@ -5,11 +5,11 @@ using UnityEngine.Events;
 
 public class ABManager : SingleTons<ABManager>
 {
-    private AssetBundle MainAB = null; // 主AB包
-    private AssetBundleManifest manifest = null; // AB包清单
-    private Dictionary<string, AssetBundle> abDic = new Dictionary<string, AssetBundle>(); // 字典存储AB包
+    private AssetBundle MainAB = null;
+    private AssetBundleManifest manifest = null;
+    private Dictionary<string, AssetBundle> abDic = new Dictionary<string, AssetBundle>();
 
-    private string PathUrl // AB包路径
+    private string PathUrl
     {
         get
         {
@@ -17,7 +17,7 @@ public class ABManager : SingleTons<ABManager>
         }
     }
 
-    private string MainABName // 主AB包名称（不同平台）
+    private string MainABName
     {
         get
         {
@@ -33,14 +33,14 @@ public class ABManager : SingleTons<ABManager>
 
     private void LoadABDepend(string abname)
     {
-        if (MainAB == null) // 加载主AB包
+        if (MainAB == null)
         {
             MainAB = AssetBundle.LoadFromFile(PathUrl + MainABName);
             manifest = MainAB.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
         }
 
         string[] strs = manifest.GetAllDependencies(abname);
-        foreach (string str in strs) // 加载当前AB包的依赖
+        foreach (string str in strs)
         {
             if (!abDic.ContainsKey(str))
             {
@@ -49,21 +49,21 @@ public class ABManager : SingleTons<ABManager>
             }
         }
 
-        if (!abDic.ContainsKey(abname)) // 加载当前AB包
+        if (!abDic.ContainsKey(abname))
         {
             AssetBundle ab = AssetBundle.LoadFromFile(PathUrl + abname);
             abDic.Add(abname, ab);
         }
     }
 
-    public Object LoadRes(string abname, string resname) // 同步加载资源
+    public Object LoadRes(string abname, string resname)
     {
         LoadABDepend(abname);
         Object obj = abDic[abname].LoadAsset(resname);
         return obj;
     }
 
-    public Object LoadRes(string abname, string resname, System.Type type) // 同步加载资源（泛型）
+    public Object LoadRes(string abname, string resname, System.Type type)
     {
         LoadABDepend(abname);
         Object obj = abDic[abname].LoadAsset(resname, type);
@@ -74,14 +74,14 @@ public class ABManager : SingleTons<ABManager>
         return obj;
     }
 
-    public T LoadRes<T>(string abname, string resname) where T : Object // 同步加载资源
+    public T LoadRes<T>(string abname, string resname) where T : Object
     {
         LoadABDepend(abname);
-        T obj = abDic[abname].LoadAsset<T>(resname); // 泛型加载
+        T obj = abDic[abname].LoadAsset<T>(resname);
         return obj;
     }
 
-    public void LoadResAsync(string abname, string resname, UnityAction<Object> callback) // 异步加载资源
+    public void LoadResAsync(string abname, string resname, UnityAction<Object> callback)
     {
         StartCoroutine(ReallyLoadResAsync(abname, resname, callback));
     }
@@ -91,10 +91,10 @@ public class ABManager : SingleTons<ABManager>
         LoadABDepend(abname);
         AssetBundleRequest abr = abDic[abname].LoadAssetAsync(resname);
         yield return abr;
-        callback(abr.asset); // 回调
+        callback(abr.asset);
     }
 
-    public void LoadResAsync(string abname, string resname, UnityAction<Object> callback, System.Type type) // 异步加载资源
+    public void LoadResAsync(string abname, string resname, UnityAction<Object> callback, System.Type type)
     {
         StartCoroutine(ReallyLoadResAsync(abname, resname, callback, type));
     }
@@ -104,23 +104,23 @@ public class ABManager : SingleTons<ABManager>
         LoadABDepend(abname);
         AssetBundleRequest abr = abDic[abname].LoadAssetAsync(resname, type);
         yield return abr;
-        callback(abr.asset); // 回调
+        callback(abr.asset); 
     }
 
-    public void LoadResAsync<T>(string abname, string resname, UnityAction<T> callback, System.Type type) where T : Object // 异步加载资源
+    public void LoadResAsync<T>(string abname, string resname, UnityAction<T> callback, System.Type type) where T : Object 
     {
         StartCoroutine(ReallyLoadResAsync<T>(abname, resname, callback, type));
     }
 
-    private IEnumerator ReallyLoadResAsync<T>(string abname, string resname, UnityAction<T> callback, System.Type type) where T : Object // 异步加载资源
+    private IEnumerator ReallyLoadResAsync<T>(string abname, string resname, UnityAction<T> callback, System.Type type) where T : Object
     {
         LoadABDepend(abname);
         AssetBundleRequest abr = abDic[abname].LoadAssetAsync<T>(resname);
         yield return abr;
-        callback(abr.asset as T); // 回调
+        callback(abr.asset as T); 
     }
 
-    public void UnLoad(string abname) // 卸载资源
+    public void UnLoad(string abname)
     {
         if (abDic.ContainsKey(abname))
         {
@@ -129,7 +129,7 @@ public class ABManager : SingleTons<ABManager>
         }
     }
 
-    public void ClearAB() // 清除所有资源
+    public void ClearAB()
     {
         AssetBundle.UnloadAllAssetBundles(false);
         abDic.Clear();
