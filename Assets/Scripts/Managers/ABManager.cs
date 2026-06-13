@@ -239,8 +239,8 @@ public class ABManager : SingleTons<ABManager>
     }
     public void GetLocalABCompareFile(UnityAction callback = null)
     {
-        string datapath = Application.persistentDataPath + "/ABCompareInfo.txt";
-        string streamingpath = Application.streamingAssetsPath + "/ABCompareInfo.txt";
+        string datapath = "file:///" + Application.persistentDataPath + "/ABCompareInfo.txt";
+        string streamingpath = "file:///" + Application.streamingAssetsPath + "/ABCompareInfo.txt";
         if(File.Exists(datapath))
         {
             StartCoroutine(GetLocalABCompareFileInfo(datapath,callback));
