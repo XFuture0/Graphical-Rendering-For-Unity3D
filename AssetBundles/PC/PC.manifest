@@ -1,7 +1,7 @@
 ManifestFileVersion: 0
-CRC: 1657187823
+CRC: 4281134529
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: tree
+      Name: stone
       Dependencies: {}

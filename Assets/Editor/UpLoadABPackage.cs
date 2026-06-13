@@ -27,8 +27,8 @@ public class UpLoadABPackage : EditorWindow
         {
             try
             {
-                FtpWebRequest req = FtpWebRequest.Create(new Uri("ftp://127.0.0.1/PC/" + fileName)) as FtpWebRequest;
-                NetworkCredential credentials = new NetworkCredential("username", "password");
+                FtpWebRequest req = FtpWebRequest.Create(new Uri("ftp://120.26.166.41/PC/" + fileName)) as FtpWebRequest;
+                NetworkCredential credentials = new NetworkCredential("XFuture", "wyh.is.xf.91");
                 req.Credentials = credentials;
                 req.Method = WebRequestMethods.Ftp.UploadFile;
                 req.Proxy = null;
@@ -47,6 +47,7 @@ public class UpLoadABPackage : EditorWindow
                     upLoadStream.Close();
                     fileStream.Close();
                 }
+                Debug.Log("上传文件：" + fileName + "成功");
             }
             catch(WebException e)
             {
