@@ -38,12 +38,20 @@ public class ABManager : SingleTons<ABManager>
     private Dictionary<string, ABInfo> LocalABInfoDic = new Dictionary<string, ABInfo>();
     private List<string> DownLoadList = new List<string>();
 
-    private string PathUrl
+    private string GetPathUrl(string abname)
     {
-        get
+        string datapath = "file:///" + Application.persistentDataPath + "/" + abname;
+        if (File.Exists(datapath))
         {
-            return Application.streamingAssetsPath + "/";
+            return datapath;
         }
+        string streamingpath = "file:///" + Application.streamingAssetsPath + "/" + abname;
+        if (File.Exists(streamingpath))
+        {
+            return streamingpath;
+        }
+        Debug.LogError("ABManager: " + abname + " not found");
+        return "";
     }
 
     private string MainABName
@@ -63,7 +71,7 @@ public class ABManager : SingleTons<ABManager>
     {
         if (MainAB == null)
         {
-            MainAB = AssetBundle.LoadFromFile(PathUrl + MainABName);
+            MainAB = AssetBundle.LoadFromFile(GetPathUrl(MainABName));
             manifest = MainAB.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
         }
 
@@ -72,14 +80,14 @@ public class ABManager : SingleTons<ABManager>
         {
             if (!abDic.ContainsKey(str))
             {
-                AssetBundle bundle = AssetBundle.LoadFromFile(PathUrl + str);
+                AssetBundle bundle = AssetBundle.LoadFromFile(GetPathUrl(str));
                 abDic.Add(str, bundle);
             }
         }
 
         if (!abDic.ContainsKey(abname))
         {
-            AssetBundle ab = AssetBundle.LoadFromFile(PathUrl + abname);
+            AssetBundle ab = AssetBundle.LoadFromFile(GetPathUrl(abname));
             abDic.Add(abname, ab);
         }
     }
